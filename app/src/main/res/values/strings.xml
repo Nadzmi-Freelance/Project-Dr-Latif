@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">Project Dr Latif</string>
+    <string name="action_settings">Settings</string>
+    <string name="title_activity_book_detail">BookDetail</string>
+</resources>
