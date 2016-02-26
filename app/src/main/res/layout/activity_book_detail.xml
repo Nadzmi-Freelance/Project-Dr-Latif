@@ -75,30 +75,10 @@
                             android:orientation="vertical"
                             android:paddingTop="10dp">
 
-                            <!-- Dalam list view ni akan letak suma komen dari user,
-                                 format comment ada kat bawah -->
                             <ListView
                                 android:id="@+id/listComment"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"/>
-
-                            <!-- Format komen user
-                            <TextView
-                                android:id="@+id/namaUser"
-                                android:text="Nama User"
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:textStyle="bold"
-                                android:textSize="25dp"/>
-
-                            <TextView
-                                android:id="@+id/infoPositif"
-                                android:text="info positif info positif info positif info positif info positif info positif info positif"
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:textStyle="normal"
-                                android:textSize="20dp"/>
-                             -->
 
                             <LinearLayout
                                 android:layout_width="match_parent"

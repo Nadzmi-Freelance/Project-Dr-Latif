@@ -2,4 +2,12 @@
     <string name="app_name">Project Dr Latif</string>
     <string name="action_settings">Settings</string>
     <string name="title_activity_book_detail">BookDetail</string>
+
+    <string-array name="menus">
+        <item>Book List</item>
+    </string-array>
+
+    <string-array name="buku">
+        <item>Test Buku</item>
+    </string-array>
 </resources>
