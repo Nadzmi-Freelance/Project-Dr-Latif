@@ -19,7 +19,16 @@
         </activity>
         <activity
             android:name=".BookDetail"
-            android:label="@string/title_activity_book_detail"></activity>
+            android:label="@string/title_activity_book_detail" />
+        <activity
+            android:name=".PositiveTab"
+            android:label="@string/title_activity_positive_tab" />
+        <activity
+            android:name=".NeutralTab"
+            android:label="@string/title_activity_neutral_tab" />
+        <activity
+            android:name=".NegativeTab"
+            android:label="@string/title_activity_negative_tab"></activity>
     </application>
 
 </manifest>

@@ -49,9 +49,9 @@ public class MainActivity extends ActionBarActivity implements AdapterView.OnIte
     }
 
     public void onItemClick(AdapterView<?> parent, View v, int position, long id) { // listen for item(menu) click in the menu drawer
-        switch (v.getId()) {
+        switch (parent.getId()) { // get id utk AdapterView(ListView, GridView atau Spinner) yang kita click
             case R.id.listBuku :
-                startActivity(new Intent(this, BookDetail.class));
+                startActivity(new Intent(this, BookDetail.class)); // move to page BookDetail(create new activity based on BookDetail)
                 break;
             case R.id.menuList :
                 menuList.setItemChecked(position, true); // check the item that is being click to true
@@ -63,8 +63,6 @@ public class MainActivity extends ActionBarActivity implements AdapterView.OnIte
                 Toast.makeText(this, "Error", Toast.LENGTH_LONG).show();
                 break;
         }
-
-        // ^---------------------------------------------------------------------------------------- ada error kat sini, takleh nak detect menu mana aq click -----------------------------------------------------
     }
 
     protected void onPostCreate(Bundle savedInstanceState) { // used for syncing the state of the icon on left, up most of the screen
