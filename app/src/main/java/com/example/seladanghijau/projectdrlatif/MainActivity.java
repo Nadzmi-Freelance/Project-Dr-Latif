@@ -17,6 +17,9 @@ import android.widget.ListView;
 import android.widget.Toast;
 import android.widget.Toolbar;
 
+import java.io.IOException;
+import java.net.HttpURLConnection;
+
 public class MainActivity extends ActionBarActivity implements AdapterView.OnItemClickListener {
     ActionBarDrawerToggle drawerListener;
     DrawerLayout drawerLayout;
