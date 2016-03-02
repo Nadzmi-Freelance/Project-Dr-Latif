@@ -1,0 +1,323 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.v4.widget.DrawerLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/drawerLayout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context="com.example.seladanghijau.projectdrlatif.BookDetail">
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <ScrollView
+            android:id="@+id/scrollView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="10dp"
+                android:orientation="vertical">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:id="@+id/tajukBuku"
+                        android:text="Tajuk Buku"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:textStyle="bold"
+                        android:textSize="30dp"/>
+
+                    <TextView
+                        android:id="@+id/infoBuku"
+                        android:text="info buku info buku info buku info buku info buku info buku info buku info buku info buku"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="10dp"
+                        android:textSize="20dp"/>
+
+                    <Button
+                        android:id="@+id/buttonLinkPDF"
+                        android:text="View PDF"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"/>
+                </LinearLayout>
+
+                <TabHost
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:id="@+id/tabHost"
+                    android:layout_marginLeft="0dp"
+                    android:layout_marginRight="0dp"
+                    android:layout_marginTop="10dp">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:orientation="vertical">
+
+                        <TabWidget
+                            android:id="@android:id/tabs"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"></TabWidget>
+
+                        <FrameLayout
+                            android:id="@android:id/tabcontent"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent">
+
+                            <LinearLayout
+                                android:id="@+id/positiveTab"
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:orientation="vertical">
+
+                                <LinearLayout
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:orientation="vertical"
+                                    android:layout_marginTop="30dp"
+                                    android:padding="10dp">
+
+                                    <LinearLayout
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        android:orientation="vertical">
+
+                                        <TextView
+                                            android:text="Nama user"
+                                            android:layout_width="match_parent"
+                                            android:layout_height="wrap_content"
+                                            android:textStyle="bold"
+                                            android:textSize="20dp"/>
+
+                                        <TextView
+                                            android:text="Comment comment Comment comment Comment comment Comment comment Comment comment Comment comment Comment comment"
+                                            android:layout_width="match_parent"
+                                            android:layout_height="wrap_content"
+                                            android:layout_marginBottom="20dp"/>
+
+                                        <TextView
+                                            android:text="Nama user"
+                                            android:layout_width="match_parent"
+                                            android:layout_height="wrap_content"
+                                            android:textStyle="bold"
+                                            android:textSize="20dp"/>
+
+                                        <TextView
+                                            android:text="Comment comment Comment comment Comment comment Comment comment Comment comment Comment comment Comment comment"
+                                            android:layout_width="match_parent"
+                                            android:layout_height="wrap_content"
+                                            android:layout_marginBottom="20dp"/>
+
+                                        <TextView
+                                            android:text="Nama user"
+                                            android:layout_width="match_parent"
+                                            android:layout_height="wrap_content"
+                                            android:textStyle="bold"
+                                            android:textSize="20dp"/>
+
+                                        <TextView
+                                            android:text="Comment comment Comment comment Comment comment Comment comment Comment comment Comment comment Comment comment"
+                                            android:layout_width="match_parent"
+                                            android:layout_height="wrap_content"
+                                            android:layout_marginBottom="20dp"/>
+                                    </LinearLayout>
+
+                                    <EditText
+                                        android:id="@+id/commentBoxPositive"
+                                        android:text="Input your comment here"
+                                        android:inputType="textMultiLine"
+                                        android:layout_height="match_parent"
+                                        android:layout_width="match_parent"
+                                        android:ems="10"/>
+
+                                    <Button
+                                        android:id="@+id/buttonSendCommentPositive"
+                                        android:text="SEND"
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"/>
+                                </LinearLayout>
+                            </LinearLayout>
+
+                            <LinearLayout
+                                android:id="@+id/neutralTab"
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:orientation="vertical">
+
+                                <ListView
+                                    android:id="@+id/listCommentNeutral"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"/>
+
+                                <LinearLayout
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:orientation="vertical"
+                                    android:layout_marginTop="30dp"
+                                    android:padding="10dp">
+
+                                    <LinearLayout
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        android:orientation="vertical">
+
+                                        <TextView
+                                            android:text="Nama user"
+                                            android:layout_width="match_parent"
+                                            android:layout_height="wrap_content"
+                                            android:textStyle="bold"
+                                            android:textSize="20dp"/>
+
+                                        <TextView
+                                            android:text="Comment comment Comment comment Comment comment Comment comment Comment comment Comment comment Comment comment"
+                                            android:layout_width="match_parent"
+                                            android:layout_height="wrap_content"
+                                            android:layout_marginBottom="20dp"/>
+
+                                        <TextView
+                                            android:text="Nama user"
+                                            android:layout_width="match_parent"
+                                            android:layout_height="wrap_content"
+                                            android:textStyle="bold"
+                                            android:textSize="20dp"/>
+
+                                        <TextView
+                                            android:text="Comment comment Comment comment Comment comment Comment comment Comment comment Comment comment Comment comment"
+                                            android:layout_width="match_parent"
+                                            android:layout_height="wrap_content"
+                                            android:layout_marginBottom="20dp"/>
+
+                                        <TextView
+                                            android:text="Nama user"
+                                            android:layout_width="match_parent"
+                                            android:layout_height="wrap_content"
+                                            android:textStyle="bold"
+                                            android:textSize="20dp"/>
+
+                                        <TextView
+                                            android:text="Comment comment Comment comment Comment comment Comment comment Comment comment Comment comment Comment comment"
+                                            android:layout_width="match_parent"
+                                            android:layout_height="wrap_content"
+                                            android:layout_marginBottom="20dp"/>
+                                    </LinearLayout>
+
+                                    <EditText
+                                        android:id="@+id/commentBoxNeutral"
+                                        android:text="Input your comment here"
+                                        android:inputType="textMultiLine"
+                                        android:layout_height="match_parent"
+                                        android:layout_width="match_parent"
+                                        android:ems="10"/>
+
+                                    <Button
+                                        android:id="@+id/buttonSendCommentNeutral"
+                                        android:text="SEND"
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"/>
+                                </LinearLayout>
+                            </LinearLayout>
+
+                            <LinearLayout
+                                android:id="@+id/negativeTab"
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:orientation="vertical">
+
+                                <ListView
+                                    android:id="@+id/listCommentNegative"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"/>
+
+                                <LinearLayout
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:orientation="vertical"
+                                    android:layout_marginTop="30dp"
+                                    android:padding="10dp">
+
+                                    <LinearLayout
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        android:orientation="vertical">
+
+                                        <TextView
+                                            android:text="Nama user"
+                                            android:layout_width="match_parent"
+                                            android:layout_height="wrap_content"
+                                            android:textStyle="bold"
+                                            android:textSize="20dp"/>
+
+                                        <TextView
+                                            android:text="Comment comment Comment comment Comment comment Comment comment Comment comment Comment comment Comment comment"
+                                            android:layout_width="match_parent"
+                                            android:layout_height="wrap_content"
+                                            android:layout_marginBottom="20dp"/>
+
+                                        <TextView
+                                            android:text="Nama user"
+                                            android:layout_width="match_parent"
+                                            android:layout_height="wrap_content"
+                                            android:textStyle="bold"
+                                            android:textSize="20dp"/>
+
+                                        <TextView
+                                            android:text="Comment comment Comment comment Comment comment Comment comment Comment comment Comment comment Comment comment"
+                                            android:layout_width="match_parent"
+                                            android:layout_height="wrap_content"
+                                            android:layout_marginBottom="20dp"/>
+
+                                        <TextView
+                                            android:text="Nama user"
+                                            android:layout_width="match_parent"
+                                            android:layout_height="wrap_content"
+                                            android:textStyle="bold"
+                                            android:textSize="20dp"/>
+
+                                        <TextView
+                                            android:text="Comment comment Comment comment Comment comment Comment comment Comment comment Comment comment Comment comment"
+                                            android:layout_width="match_parent"
+                                            android:layout_height="wrap_content"
+                                            android:layout_marginBottom="20dp"/>
+                                    </LinearLayout>
+
+                                    <EditText
+                                        android:id="@+id/commentBoxNegative"
+                                        android:text="Input your comment here"
+                                        android:inputType="textMultiLine"
+                                        android:layout_height="match_parent"
+                                        android:layout_width="match_parent"
+                                        android:ems="10"/>
+
+                                    <Button
+                                        android:id="@+id/buttonSendCommentNegative"
+                                        android:text="SEND"
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"/>
+                                </LinearLayout>
+                            </LinearLayout>
+                        </FrameLayout>
+                    </LinearLayout>
+                </TabHost>
+
+
+            </LinearLayout>
+        </ScrollView>
+    </FrameLayout>
+
+    <ListView
+        android:id="@+id/menuList"
+        android:layout_width="240dp"
+        android:layout_height="match_parent"
+        android:layout_gravity="start"
+        android:background="#FF8800"
+        android:divider="@null"></ListView>
+</android.support.v4.widget.DrawerLayout>
