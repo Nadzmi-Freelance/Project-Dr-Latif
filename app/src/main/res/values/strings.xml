@@ -24,5 +24,6 @@
         <item>Buku 4</item>
         <item>Buku 5</item>
     </string-array>
+    <string name="title_activity_pdfviewer">PDFViewer</string>
 
 </resources>

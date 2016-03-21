@@ -16,15 +16,10 @@ import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.Toast;
 
-import org.apache.http.HttpEntity;
-import org.apache.http.HttpResponse;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.util.EntityUtils;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import java.net.HttpURLConnection;
 import java.util.ArrayList;
 
 public class MainActivity extends ActionBarActivity implements AdapterView.OnItemClickListener {
@@ -34,6 +29,9 @@ public class MainActivity extends ActionBarActivity implements AdapterView.OnIte
     String[] menus;
 
     ArrayList<String> listTajukBuku;
+
+    // book's details data
+    int[] book_id;
 
     static ProgressDialog pDialog;
 
@@ -64,18 +62,15 @@ public class MainActivity extends ActionBarActivity implements AdapterView.OnIte
     public void onItemClick(AdapterView<?> parent, View v, int position, long id) { // listen for item(menu) click in the menu drawer
         switch (parent.getId()) { // get id utk AdapterView(ListView, GridView atau Spinner) yang kita click
             case R.id.listBuku :
+                // ---------------------------------- go to BookDetail Activity --------------------------------------------
                 Intent i = new Intent(this, BookDetail.class);
-                Bundle bundledData = new Bundle();
-
-                // get all the data required for the next activity
-                String book_title = (String) parent.getItemAtPosition(position);
 
                 // put data to be brought to the second activity
-                bundledData.putString("book_title", book_title);
+                i.putExtra("book_id", book_id[position]);
 
-                i.putExtras(bundledData);
                 startActivity(i); // move to page BookDetail(create new activity based on BookDetail)
                 break;
+                // ---------------------------------------------------------------------------------------------------------
             case R.id.menuList :
                 menuList.setItemChecked(position, true); // check the item that is being click to true
                 getSupportActionBar().setTitle(menus[position]); // set the title of the action bar(top bar) to the menu that has been clicked
@@ -101,23 +96,22 @@ public class MainActivity extends ActionBarActivity implements AdapterView.OnIte
 
         protected Boolean doInBackground(Void... params) {
             try {
-                HttpClient client = new DefaultHttpClient();
-                HttpPost post = new HttpPost("http://seladanghijau.netai.net/php/retrieve.php");
-                HttpResponse response = client.execute(post);
+                HTTPHandler httpHandler = new HTTPHandler();
+                String responseData = httpHandler.result("http://seladanghijau.netai.net/php/retrieve.php");
 
-                int status = response.getStatusLine().getStatusCode();
-                if(status == 200) { // http request "OK": successfully connect to database
-                    HttpEntity entity = response.getEntity();
-                    String data = EntityUtils.toString(entity);
-
-                    JSONObject jObj = new JSONObject(data);
+                if(httpHandler.getStatus() == HttpURLConnection.HTTP_OK) { // http request "OK": successfully connect to database
+                    JSONObject jObj = new JSONObject(responseData);
                     JSONArray jArray = jObj.getJSONArray("books");
 
+                    book_id = new int[jArray.length()]; // set the size according to the size of the json array
                     for(int y=0 ; y<jArray.length() ; y++) { // retrieve suma data dari json
                         JSONObject tempJSON = jArray.getJSONObject(y);
-                        String title = tempJSON.getString("book_title");
 
-                        listTajukBuku.add(title); // retrieve tajuk buku masuk kedalam list buku
+                        // get data from JSON(elementarily)
+                        String book_title = tempJSON.getString("book_title");
+                        book_id[y] = tempJSON.getInt("book_id");
+
+                        listTajukBuku.add(book_title); // retrieve tajuk buku masuk kedalam list buku
                     }
 
                     return true; // return true because successfully carry on the operation

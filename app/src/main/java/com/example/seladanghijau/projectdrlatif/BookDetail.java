@@ -15,40 +15,57 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TabHost;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import org.apache.http.HttpEntity;
+import org.apache.http.HttpHost;
+import org.apache.http.HttpRequest;
 import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
+import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.HttpClient;
+import org.apache.http.client.ResponseHandler;
+import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpPost;
+import org.apache.http.client.methods.HttpUriRequest;
+import org.apache.http.conn.ClientConnectionManager;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicHeader;
 import org.apache.http.message.BasicNameValuePair;
+import org.apache.http.params.HttpParams;
 import org.apache.http.protocol.HTTP;
+import org.apache.http.protocol.HttpContext;
 import org.apache.http.util.EntityUtils;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.w3c.dom.Text;
 
+import java.io.IOException;
+import java.net.HttpURLConnection;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.jar.Attributes;
 
 public class BookDetail extends ActionBarActivity implements AdapterView.OnItemClickListener {
+    static ProgressDialog pDialog;
+
     ActionBarDrawerToggle drawerListener;
     DrawerLayout drawerLayout;
     ListView menuList;
     TabHost tabHost;
-    TextView tajukBuku, infoBuku;
+    Button viewPDF;
+    TextView tajukBuku, accessionnoBuku, authorBuku;
     String[] menus;
 
     // data from other activities
-    Bundle bundledData;
-    String book_title;
+    int book_id;
+    String book_accessionno, book_author, book_title;
+    Book book;
 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -58,8 +75,10 @@ public class BookDetail extends ActionBarActivity implements AdapterView.OnItemC
         drawerLayout = (DrawerLayout) findViewById(R.id.drawerLayout);
         menuList = (ListView) findViewById(R.id.menuList);
         tabHost = (TabHost) findViewById(R.id.tabHost);
+        viewPDF = (Button) findViewById(R.id.viewPDF);
         tajukBuku = (TextView) findViewById(R.id.tajukBuku);
-        infoBuku = (TextView) findViewById(R.id.infoBuku);
+        accessionnoBuku = (TextView) findViewById(R.id.accessionnoBuku);
+        authorBuku = (TextView) findViewById(R.id.authorBuku);
         // --------------------------------------------------------------
 
         // -------------- drawer actions --------------------
@@ -98,15 +117,72 @@ public class BookDetail extends ActionBarActivity implements AdapterView.OnItemC
         tabHost.addTab(neutralTabSpec);
         // ----------------------------------------------------
 
-        // ------------------------ set layout utk detail buku -------------------------
-        bundledData = getIntent().getExtras(); // prepare to retrieve bundled data from previous activity
-        book_title = bundledData.getString("book_title"); // get bundled data from previous activity
+        book_id = getIntent().getIntExtra("book_id", book_id); // get bundled data from previous activity
+        new getBookDetails().execute();
+    }
 
-        // algorithm to retrieve book detail from external database
+    private class getBookDetails extends AsyncTask<Void, Void, Boolean> {
+        protected void onPreExecute() {
+            super.onPreExecute();
 
-        // set layout
-        tajukBuku.setText(book_title);
-        // -----------------------------------------------------------------------------
+            // show progress dialog
+            pDialog = new ProgressDialog(BookDetail.this);
+            pDialog.setMessage("Tunggu sebentar...");
+            pDialog.setCancelable(false);
+            pDialog.show();
+        }
+
+        protected Boolean doInBackground(Void... params) {
+            // algorithm to retrieve book detail from external database
+            // cari detail buku tersebut dalam database
+            try {
+                // -------------------- send http post request to request for book details data --------------------------------
+                HTTPHandler httpHandler = new HTTPHandler(); // setup HttpHandler object
+
+                // ------------------------------ setup data for the post request ----------------------------------------------
+                List<NameValuePair> postData = new ArrayList<NameValuePair>();
+                postData.add(new BasicNameValuePair("book_id", "" + book_id));
+                // -------------------------------------------------------------------------------------------------------------
+
+                // ------------------ retrieve the requested data -------------------------------------------
+                // get the result from http post
+                String data = httpHandler.result("http://seladanghijau.netai.net/php/BookDetails.php", postData);
+
+                if(httpHandler.getStatus() == HttpURLConnection.HTTP_OK) {
+                    // retrieve data from JSON string
+                    JSONObject jObj = new JSONObject(data);
+                    JSONArray jArray = jObj.getJSONArray("book_details");
+
+                    JSONObject jsonObjData = jArray.getJSONObject(0);
+                    book_accessionno = jsonObjData.getString("book_accessionno");
+                    book_author = jsonObjData.getString("book_author");
+                    book_title = jsonObjData.getString("book_title");
+
+                    book = new Book(book_id, book_accessionno, book_author, book_title);
+
+                    return true;
+                }
+                // -------------------------------------------------------------------------------------------
+            } catch(Exception e) { e.printStackTrace(); }
+
+            return false;
+        }
+
+        protected void onPostExecute(Boolean tof) {
+            super.onPostExecute(tof);
+
+            if(tof) {
+                // ------------------------- set layout -------------------------------
+                tajukBuku.setText(book.getTitle());
+                authorBuku.setText(book.getAuthor());
+                accessionnoBuku.setText("Accession No. : " + book.getAccessionno());
+                // --------------------------------------------------------------------
+            }
+
+            // dismiss progress dialog
+            if(pDialog.isShowing())
+                pDialog.dismiss();
+        }
     }
 
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
