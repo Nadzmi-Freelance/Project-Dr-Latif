@@ -35,6 +35,7 @@ public class PDFViewer extends ActionBarActivity {
         new GetPDF().execute();
     }
 
+    String data;
     private class GetPDF extends AsyncTask<Void, Void, Boolean> {
         protected void onPreExecute() {
             super.onPreExecute();
@@ -58,9 +59,9 @@ public class PDFViewer extends ActionBarActivity {
 
                 // ------------------ retrieve the requested data -------------------------------------------
                 // get the result from http post
-                String data = httpHandler.result("http://seladanghijau.netai.net/php/PDFurl.php", postData);
+                data = httpHandler.result("http://seladanghijau.netai.net/php/PDFurl.php", postData);
 
-                if(httpHandler.getStatus() == HttpURLConnection.HTTP_OK) {
+                if (httpHandler.getStatus() == HttpURLConnection.HTTP_OK) {
                     // retrieve data from JSON string
                     JSONObject jObj = new JSONObject(data);
                     JSONArray jArray = jObj.getJSONArray("pdf");
@@ -82,12 +83,8 @@ public class PDFViewer extends ActionBarActivity {
             webview = (WebView) findViewById(R.id.webview);
             webview.getSettings().setJavaScriptEnabled(true);
 
-            if(status) {
-                if(pdfLink == null)
-                    Toast.makeText(PDFViewer.this, "This book has no pdf associated with it", Toast.LENGTH_LONG);
-                else
-                    webview.loadUrl("http://docs.google.com/gview?embedded=true&url=" + pdfLink);
-            }
+            if(status)
+                webview.loadUrl("http://docs.google.com/gview?embedded=true&url=" + pdfLink);
 
             // dismiss progress dialog
             if(pDialog.isShowing())
