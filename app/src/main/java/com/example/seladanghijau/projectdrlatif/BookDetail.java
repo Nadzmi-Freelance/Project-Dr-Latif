@@ -51,7 +51,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.jar.Attributes;
 
-public class BookDetail extends ActionBarActivity implements AdapterView.OnItemClickListener {
+public class BookDetail extends ActionBarActivity implements AdapterView.OnItemClickListener, View.OnClickListener {
     static ProgressDialog pDialog;
 
     ActionBarDrawerToggle drawerListener;
@@ -63,7 +63,7 @@ public class BookDetail extends ActionBarActivity implements AdapterView.OnItemC
     String[] menus;
 
     // data from other activities
-    int book_id;
+    int book_id, pdf_id;
     String book_accessionno, book_author, book_title;
     Book book;
 
@@ -80,6 +80,10 @@ public class BookDetail extends ActionBarActivity implements AdapterView.OnItemC
         accessionnoBuku = (TextView) findViewById(R.id.accessionnoBuku);
         authorBuku = (TextView) findViewById(R.id.authorBuku);
         // --------------------------------------------------------------
+
+        // --------------------------------------- setOnClickListener ---------------------------------------
+        viewPDF.setOnClickListener(this);
+        // --------------------------------------------------------------------------------------------------
 
         // -------------- drawer actions --------------------
         menus = getResources().getStringArray(R.array.menus);
@@ -154,11 +158,12 @@ public class BookDetail extends ActionBarActivity implements AdapterView.OnItemC
                     JSONArray jArray = jObj.getJSONArray("book_details");
 
                     JSONObject jsonObjData = jArray.getJSONObject(0);
+                    pdf_id = jsonObjData.getInt("pdf_id");
                     book_accessionno = jsonObjData.getString("book_accessionno");
                     book_author = jsonObjData.getString("book_author");
                     book_title = jsonObjData.getString("book_title");
 
-                    book = new Book(book_id, book_accessionno, book_author, book_title);
+                    book = new Book(book_id, pdf_id, book_accessionno, book_author, book_title);
 
                     return true;
                 }
@@ -185,7 +190,19 @@ public class BookDetail extends ActionBarActivity implements AdapterView.OnItemC
         }
     }
 
-    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+    public void onClick(View v) { // onClickListener
+        switch (v.getId()) {
+            case R.id.viewPDF:
+                Intent pdfViewer = new Intent(this, PDFViewer.class);
+
+                pdfViewer.putExtra("pdf_id", book.getPdfID());
+
+                startActivity(pdfViewer);
+                break;
+        }
+    }
+
+    public void onItemClick(AdapterView<?> parent, View view, int position, long id) { // onItemClickListener
         switch (parent.getId()) {
             case R.id.menuList :
                 menuList.setItemChecked(position, true);
