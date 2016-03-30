@@ -33,21 +33,36 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:textStyle="bold"
-                        android:textSize="30dp"/>
+                        android:textSize="25dp"/>
 
                     <TextView
-                        android:id="@+id/infoBuku"
-                        android:text="info buku info buku info buku info buku info buku info buku info buku info buku info buku"
+                        android:id="@+id/authorBuku"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="10dp"
+                        android:layout_marginLeft="20dp"
+                        android:text="Author name"
+                        android:textStyle="italic"
                         android:textSize="20dp"/>
 
-                    <Button
-                        android:id="@+id/buttonLinkPDF"
-                        android:text="View PDF"
+                    <LinearLayout
+                        android:layout_marginTop="15dp"
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content"/>
+                        android:layout_height="wrap_content">
+
+                        <TextView
+                            android:id="@+id/accessionnoBuku"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="Accession No."
+                            android:textStyle="bold"
+                            android:textSize="15dp"/>
+                    </LinearLayout>
+
+                    <Button
+                        android:id="@+id/viewPDF"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="View PDF"/>
                 </LinearLayout>
 
                 <TabHost
