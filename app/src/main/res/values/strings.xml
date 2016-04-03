@@ -1,15 +1,29 @@
 <resources>
     <string name="app_name">Project Dr Latif</string>
     <string name="action_settings">Settings</string>
-    <string name="title_activity_book_detail">BookDetail</string>
-    <string name="title_activity_pdfviewer">PDFViewer</string>
 
-    <string-array name="menus">
+    <string-array name="menuMain">
         <item>Menu 1</item>
         <item>Menu 2</item>
-        <item>Menu 3</item>
+        <item>Log Out</item>
+    </string-array>
+    <string-array name="menuLogin">
+        <item>Student</item>
+        <item>Staff</item>
+        <item>Library Staff</item>
+    </string-array>
+    <string-array name="userType">
+        <item>Student</item>
+        <item>Staff</item>
+        <item>Library Staff</item>
     </string-array>
 
+    <string name="title_activity_book_detail">BookDetail</string>
+    <string name="title_activity_pdfviewer">PDFViewer</string>
+    <string name="title_activity_login_page">LoginPage</string>
+    <string name="title_activity_register_page">RegisterPage</string>
+    <string name="title_activity_login_page_student">LoginPageStudent</string>
+    <string name="title_activity_logout_page">LogoutPage</string>
 
 
 </resources>

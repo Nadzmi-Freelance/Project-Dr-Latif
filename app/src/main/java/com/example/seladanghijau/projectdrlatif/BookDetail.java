@@ -86,7 +86,7 @@ public class BookDetail extends ActionBarActivity implements AdapterView.OnItemC
         // --------------------------------------------------------------------------------------------------
 
         // -------------- drawer actions --------------------
-        menus = getResources().getStringArray(R.array.menus);
+        menus = getResources().getStringArray(R.array.menuMain);
         drawerListener = new ActionBarDrawerToggle(this, drawerLayout, 0, 0);
         drawerLayout.setDrawerListener(drawerListener);
 
@@ -233,10 +233,11 @@ public class BookDetail extends ActionBarActivity implements AdapterView.OnItemC
         return super.onKeyDown(keyCode, event);
     }
 
-    protected void onPostCreate(Bundle savedInstanceState) {
+    // --------------------------------------------------------------- actions for drawer -------------------------------------------------------------
+    protected void onPostCreate(Bundle savedInstanceState) { // used for syncing the state of the icon on left, up most of the screen
         super.onPostCreate(savedInstanceState);
 
-        drawerListener.syncState();
+        drawerListener.syncState(); // syncing the state of the icon on left, up most of the screen
     }
 
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -245,7 +246,7 @@ public class BookDetail extends ActionBarActivity implements AdapterView.OnItemC
         return true;
     }
 
-    public boolean onOptionsItemSelected(MenuItem item) {
+    public boolean onOptionsItemSelected(MenuItem item) { // handle action bar item click(top bar)
         if(drawerListener.onOptionsItemSelected(item)) {
             return true;
         }
@@ -253,9 +254,10 @@ public class BookDetail extends ActionBarActivity implements AdapterView.OnItemC
         return super.onOptionsItemSelected(item);
     }
 
-    public void onConfigurationChanged(Configuration newConfig) {
+    public void onConfigurationChanged(Configuration newConfig) { // detect when the configuration(landscape or portrait) of the screen change
         super.onConfigurationChanged(newConfig);
 
-        drawerListener.onConfigurationChanged(newConfig);
+        drawerListener.onConfigurationChanged(newConfig); // change to new configuration
     }
+    // ---------------------------------------------------------------------------------------------------------------------------------------------------
 }

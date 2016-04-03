@@ -44,7 +44,7 @@ public class MainActivity extends ActionBarActivity implements AdapterView.OnIte
         menuList = (ListView) findViewById(R.id.menuList);
         listBuku = (ListView) findViewById(R.id.listBuku);
 
-        menus = getResources().getStringArray(R.array.menus); // get list of menus from xml file
+        menus = getResources().getStringArray(R.array.menuMain); // get list of menus from xml file
         drawerListener = new ActionBarDrawerToggle(this, drawerLayout, 0, 0); // declare listener for drawer menu
         drawerLayout.setDrawerListener(drawerListener); // register listener for drawer menu
 
@@ -59,6 +59,7 @@ public class MainActivity extends ActionBarActivity implements AdapterView.OnIte
         new LoadBookList().execute();
     }
 
+    // --------------------------------------------------- OnClick events ---------------------------------------------------------------
     public void onItemClick(AdapterView<?> parent, View v, int position, long id) { // listen for item(menu) click in the menu drawer
         switch (parent.getId()) { // get id utk AdapterView(ListView, GridView atau Spinner) yang kita click
             case R.id.listBuku :
@@ -75,6 +76,13 @@ public class MainActivity extends ActionBarActivity implements AdapterView.OnIte
                 menuList.setItemChecked(position, true); // check the item that is being click to true
                 getSupportActionBar().setTitle(menus[position]); // set the title of the action bar(top bar) to the menu that has been clicked
 
+                switch(position) {
+                    case 2:
+                        Intent logoutPage = new Intent(MainActivity.this, LogoutPage.class);
+                        startActivity(logoutPage);
+                        break;
+                }
+
                 drawerLayout.closeDrawers(); // close the drawer when an item has been clicked
                 break;
             default :
@@ -82,6 +90,7 @@ public class MainActivity extends ActionBarActivity implements AdapterView.OnIte
                 break;
         }
     }
+    // -------------------------------------------------------------------------------------------------------------------------------------
 
     private class LoadBookList extends AsyncTask<Void, Void, Boolean> {
         protected void onPreExecute() {
@@ -139,6 +148,7 @@ public class MainActivity extends ActionBarActivity implements AdapterView.OnIte
         }
     }
 
+    // --------------------------------------------------------------- actions for drawer -------------------------------------------------------------
     protected void onPostCreate(Bundle savedInstanceState) { // used for syncing the state of the icon on left, up most of the screen
         super.onPostCreate(savedInstanceState);
 
@@ -164,4 +174,5 @@ public class MainActivity extends ActionBarActivity implements AdapterView.OnIte
 
         drawerListener.onConfigurationChanged(newConfig); // change to new configuration
     }
+    // ---------------------------------------------------------------------------------------------------------------------------------------------------
 }
