@@ -28,9 +28,8 @@ public class LogoutPage extends ActionBarActivity implements AdapterView.OnItemC
     String[] menus, userType;
 
     // sharedpreference data
-    SharedPreferences studentData;
-    SharedPreferences.Editor studentDataEditor;
-    public static final String STUDENT_PREFERENCES = "stud_pref";
+    SharedPreferences userData;
+    SharedPreferences.Editor userDataEditor;
 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -54,8 +53,8 @@ public class LogoutPage extends ActionBarActivity implements AdapterView.OnItemC
         // ------------------------------------------------------------------------
 
         // ------------------------- setup sharedpreference ----------------------------------
-        studentData = getSharedPreferences(STUDENT_PREFERENCES, MODE_PRIVATE);
-        studentDataEditor = studentData.edit();
+        userData = getSharedPreferences(LoginPage.USER_PREFERENCES, MODE_PRIVATE);
+        userDataEditor = userData.edit();
         // -----------------------------------------------------------------------------------
 
         // ---------------------- Setup OnClickListener in activity -----------------------------
@@ -74,10 +73,11 @@ public class LogoutPage extends ActionBarActivity implements AdapterView.OnItemC
     public void onClick(View v) {
         switch(v.getId()) {
             case R.id.logout:
-                studentDataEditor.clear();
-                studentDataEditor.commit();
+                userDataEditor.clear();
+                userDataEditor.putInt(LoginPage.LOGIN_STAT, LoginPage.NOTLOGGEDIN);
+                userDataEditor.commit();
 
-                Intent loginPage = new Intent(LogoutPage.this, LoginPageStudent.class);
+                Intent loginPage = new Intent(LogoutPage.this, LoginPage.class);
                 startActivity(loginPage);
                 finish();
                 break;

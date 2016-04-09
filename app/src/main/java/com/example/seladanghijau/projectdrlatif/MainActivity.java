@@ -98,7 +98,7 @@ public class MainActivity extends ActionBarActivity implements AdapterView.OnIte
 
             // show progress dialog
             pDialog = new ProgressDialog(MainActivity.this);
-            pDialog.setMessage("Tunggu sebentar...");
+            pDialog.setMessage("Please wait...");
             pDialog.setCancelable(false);
             pDialog.show();
         }
@@ -130,11 +130,11 @@ public class MainActivity extends ActionBarActivity implements AdapterView.OnIte
             return false; // return false because unsuccessfully carry on the operation
         }
 
-        protected void onPostExecute(Boolean cond) {
-            super.onPostExecute(cond);
+        protected void onPostExecute(Boolean result) {
+            super.onPostExecute(result);
 
             // check if the retrieve operation is successful or not
-            if(cond) {
+            if(result) {
                 // list utk buku
                 listBuku.setAdapter(new ArrayAdapter<>(MainActivity.this, R.layout.menulist_layout, listTajukBuku)); // display list buku dalam arraylist ke ListView
                 listBuku.setOnItemClickListener(MainActivity.this); // set onclicklistener utk setiap item dlm ListView

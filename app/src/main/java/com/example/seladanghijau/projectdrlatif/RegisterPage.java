@@ -31,42 +31,22 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class RegisterPage extends ActionBarActivity implements AdapterView.OnItemClickListener, View.OnClickListener {
-    // element dalam drawer
-    ProgressDialog pDialog;
-    ActionBarDrawerToggle drawerListener;
-    DrawerLayout drawerLayout;
-    ListView menuList;
-    String[] menus, userType;
-
     // element dalam activity
     EditText name, email, username, password;
     TextView gotoLogin;
     Button register;
     Spinner userTypeList;
+    ProgressDialog pDialog;
+    String[] userType;
 
     // other attributes
     String inUserType, inUsername, inPassword, inName, inEmail;
-    String registerResult;
 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_register_page);
 
         // --------------- initialize every object ------------------
-        // element dlm drawer
-        drawerLayout = (DrawerLayout) findViewById(R.id.drawerLayout);
-        menuList = (ListView) findViewById(R.id.menuList);
-
-        menus = getResources().getStringArray(R.array.menuLogin); // get list of menus from xml file
-        drawerListener = new ActionBarDrawerToggle(this, drawerLayout, 0, 0); // declare listener for drawer menu
-        drawerLayout.setDrawerListener(drawerListener); // register listener for drawer menu
-
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true); // set back arrow icon on left, up most of the screen
-
-        // list utk drawer
-        menuList.setAdapter(new ArrayAdapter<>(this, R.layout.menulist_layout, menus)); // set a list of menus for the menu drawer
-        menuList.setOnItemClickListener(this); // register click listener for each of the menus of the menu drawer
-
         // element dalam activity
         name = (EditText) findViewById(R.id.name);
         email = (EditText) findViewById(R.id.email);
@@ -93,7 +73,7 @@ public class RegisterPage extends ActionBarActivity implements AdapterView.OnIte
         switch (v.getId()) {
             case R.id.gotoLogin:
                 // goto login page
-                Intent loginPageStudent = new Intent(RegisterPage.this, LoginPageStudent.class);
+                Intent loginPageStudent = new Intent(RegisterPage.this, LoginPage.class);
 
                 startActivity(loginPageStudent);
                 finish();
@@ -119,7 +99,7 @@ public class RegisterPage extends ActionBarActivity implements AdapterView.OnIte
 
             // show progress dialog
             pDialog = new ProgressDialog(RegisterPage.this);
-            pDialog.setMessage("Tunggu sebentar...");
+            pDialog.setMessage("Please wait...");
             pDialog.setCancelable(false);
             pDialog.show();
 
@@ -129,66 +109,49 @@ public class RegisterPage extends ActionBarActivity implements AdapterView.OnIte
             inName = name.getText().toString();
             inEmail = email.getText().toString();
 
-            if(inUserType.equalsIgnoreCase("student"))
+            if(inUserType.equalsIgnoreCase("Student"))
                 inUserType = "student";
-            else if(inUserType.equalsIgnoreCase("staff"))
+            else if(inUserType.equalsIgnoreCase("Staff"))
                 inUserType = "staff";
-            else if(inUserType.equalsIgnoreCase("stafflibrary"))
+            else if(inUserType.equalsIgnoreCase("Library Staff"))
                 inUserType = "stafflibrary";
         }
 
         protected Integer doInBackground(Void... params) {
-            if(inUsername != null)
-                if(inPassword != null)
-                    if(inName != null)
-                        if(inEmail != null) {
-                            try {
-                                // -------------------- send http post request to request for book details data --------------------------------
-                                HTTPHandler httpHandler = new HTTPHandler(); // setup HttpHandler object
+            int registerResult = 3;
 
-                                // ------------------------------ setup data for the post request ----------------------------------------------
-                                List<NameValuePair> postData = new ArrayList<NameValuePair>();
-                                postData.add(new BasicNameValuePair("userType", "" + inUserType));
-                                postData.add(new BasicNameValuePair("name", "" + inName));
-                                postData.add(new BasicNameValuePair("email", "" + inEmail));
-                                postData.add(new BasicNameValuePair("username", "" + inUsername));
-                                postData.add(new BasicNameValuePair("password", "" + inPassword));
-                                // -------------------------------------------------------------------------------------------------------------
+            if((inUsername!=null) && (inPassword!=null) && (inName!=null) && (inEmail!=null)) {
+                try {
+                    // -------------------- send http post request to request for book details data --------------------------------
+                    HTTPHandler httpHandler = new HTTPHandler(); // setup HttpHandler object
 
-                                // ------------------ retrieve the requested data -------------------------------------------
-                                // get the result from http post
-                                String data = httpHandler.result("http://seladanghijau.netai.net/php/register.php", postData);
+                    // ------------------------------ setup data for the post request ----------------------------------------------
+                    List<NameValuePair> postData = new ArrayList<NameValuePair>();
+                    postData.add(new BasicNameValuePair("inUserType", "" + inUserType));
+                    postData.add(new BasicNameValuePair("inName", "" + inName));
+                    postData.add(new BasicNameValuePair("inEmail", "" + inEmail));
+                    postData.add(new BasicNameValuePair("inUsername", "" + inUsername));
+                    postData.add(new BasicNameValuePair("inPassword", "" + inPassword));
+                    // -------------------------------------------------------------------------------------------------------------
 
-                                if (httpHandler.getStatus() == HttpURLConnection.HTTP_OK) {
-                                    // retrieve data from JSON string
-                                    JSONObject jObj = new JSONObject(data);
-                                    JSONArray jArray = jObj.getJSONArray("register");
+                    // ------------------ retrieve the requested data -------------------------------------------
+                    // get the result from http post
+                    String data = httpHandler.result("http://seladanghijau.netai.net/php/register.php", postData);
 
-                                    // store all data for student in 'student' sharedPreference
-                                    JSONObject studentJson = jArray.getJSONObject(0);
-                                    registerResult = studentJson.getString("result");
+                    if (httpHandler.getStatus() == HttpURLConnection.HTTP_OK) {
+                        // retrieve data from JSON string
+                        JSONObject jObj = new JSONObject(data);
+                        JSONArray jArray = jObj.getJSONArray("register");
 
-                                    if (registerResult.equalsIgnoreCase("success"))
-                                        return 1;
-                                    else if (registerResult.equalsIgnoreCase("existed"))
-                                        return 2;
-                                    else if (registerResult.equalsIgnoreCase("error_check"))
-                                        return 0;
-                                }
-                                // -------------------------------------------------------------------------------------------
-                            } catch (Exception e) {
-                                e.printStackTrace();
-                            }
-                        } else
-                            return 3;
-                    else
-                        return 3;
-                else
-                    return 3;
-            else
-                return 3;
+                        // check result for any error
+                        JSONObject studentJson = jArray.getJSONObject(0);
+                        registerResult = studentJson.getInt("register_result");
+                    }
+                    // -------------------------------------------------------------------------------------------
+                } catch (Exception e) { e.printStackTrace(); }
+            } else registerResult = 3;
 
-            return 0;
+            return registerResult;
         }
 
         protected void onPostExecute(Integer result) {
@@ -200,50 +163,26 @@ public class RegisterPage extends ActionBarActivity implements AdapterView.OnIte
 
             switch(result) {
                 case 0:
-                    Toast.makeText(RegisterPage.this, "Failed to register. An error occured.", Toast.LENGTH_LONG).show();
-                    break;
-                case 1:
-                    Intent loginPageStudent = new Intent(RegisterPage.this, LoginPageStudent.class);
+                    Toast.makeText(RegisterPage.this, "Your account has been registered. Please login.", Toast.LENGTH_LONG).show();
 
+                    Intent loginPageStudent = new Intent(RegisterPage.this, LoginPage.class);
                     startActivity(loginPageStudent);
                     finish();
                     break;
-                case 2:
+                case 1:
                     Toast.makeText(RegisterPage.this, "Failed to register. Account already existed", Toast.LENGTH_LONG).show();
+                    break;
+                case 2:
+                    Toast.makeText(RegisterPage.this, "Failed to register. An error occured.", Toast.LENGTH_LONG).show();
                     break;
                 case 3:
                     Toast.makeText(RegisterPage.this, "Please fill up all of the fields.", Toast.LENGTH_LONG).show();
+                    break;
+                case 4:
+                    Toast.makeText(RegisterPage.this, "An error has occured.", Toast.LENGTH_LONG).show();
                     break;
             }
         }
     }
     // -----------------------------------------------------------------------------------------------------------------------
-
-    // --------------------------------------------------------------- actions for drawer -------------------------------------------------------------
-    protected void onPostCreate(Bundle savedInstanceState) { // used for syncing the state of the icon on left, up most of the screen
-        super.onPostCreate(savedInstanceState);
-
-        drawerListener.syncState(); // syncing the state of the icon on left, up most of the screen
-    }
-
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_main, menu);
-        return true;
-    }
-
-    public boolean onOptionsItemSelected(MenuItem item) { // handle action bar item click(top bar)
-        if(drawerListener.onOptionsItemSelected(item)) {
-            return true;
-        }
-
-        return super.onOptionsItemSelected(item);
-    }
-
-    public void onConfigurationChanged(Configuration newConfig) { // detect when the configuration(landscape or portrait) of the screen change
-        super.onConfigurationChanged(newConfig);
-
-        drawerListener.onConfigurationChanged(newConfig); // change to new configuration
-    }
-    // ---------------------------------------------------------------------------------------------------------------------------------------------------
 }

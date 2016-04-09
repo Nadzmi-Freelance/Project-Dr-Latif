@@ -18,6 +18,7 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
+import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -31,56 +32,41 @@ import java.net.HttpURLConnection;
 import java.util.ArrayList;
 import java.util.List;
 
-public class LoginPageStudent extends ActionBarActivity implements View.OnClickListener, AdapterView.OnItemClickListener {
-    ProgressDialog pDialog;
-
-    // element dalam drawer
-    ActionBarDrawerToggle drawerListener;
-    DrawerLayout drawerLayout;
-    ListView menuList;
-    String[] menus;
-
+public class LoginPage extends ActionBarActivity implements View.OnClickListener, AdapterView.OnItemClickListener {
     // element dlm activity ni
+    ProgressDialog pDialog;
     TextView register;
     EditText username, password;
     Button login;
+    Spinner userTypeList;
+    String[] userType;
 
     // shared preferences
-    SharedPreferences studentData;
-    SharedPreferences.Editor studentDataEditor;
-    public static final String STUDENT_PREFERENCES = "stud_pref";
+    SharedPreferences userData;
+    SharedPreferences.Editor userDataEditor;
+    public static final String USER_PREFERENCES = "user_pref";
     public static final String LOGIN_STAT = "LOGIN_STAT";
-    public static final String ID = "ID";
     public static final int LOGGEDIN = 1;
     public static final int NOTLOGGEDIN = 0;
 
     // other attributes
-    String inUsername, inPassword;
+    String inUsername, inPassword, inUserType;
 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login_page_student);
 
         // --------------- initialize every object ------------------
-        // element dlm drawer
-        drawerLayout = (DrawerLayout) findViewById(R.id.drawerLayout);
-        menuList = (ListView) findViewById(R.id.menuList);
-
-        menus = getResources().getStringArray(R.array.menuLogin); // get list of menus from xml file
-        drawerListener = new ActionBarDrawerToggle(this, drawerLayout, 0, 0); // declare listener for drawer menu
-        drawerLayout.setDrawerListener(drawerListener); // register listener for drawer menu
-
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true); // set back arrow icon on left, up most of the screen
-
-        // list utk drawer
-        menuList.setAdapter(new ArrayAdapter<>(this, R.layout.menulist_layout, menus)); // set a list of menus for the menu drawer
-        menuList.setOnItemClickListener(this); // register click listener for each of the menus of the menu drawer
-
         // element dlm activity
         username = (EditText) findViewById(R.id.username);
         password = (EditText) findViewById(R.id.password);
         login = (Button) findViewById(R.id.login);
         register = (TextView) findViewById(R.id.register);
+        userTypeList = (Spinner) findViewById(R.id.userTypeList);
+
+        // element dalam spinner
+        userType = getResources().getStringArray(R.array.userType); // get list of userType
+        userTypeList.setAdapter(new ArrayAdapter<String>(LoginPage.this, android.R.layout.simple_spinner_dropdown_item, userType));
         // ----------------------------------------------------------
 
         // ------------------ implement OnClickListener -------------------
@@ -89,12 +75,12 @@ public class LoginPageStudent extends ActionBarActivity implements View.OnClickL
         // ----------------------------------------------------------------
 
         // ------------------ get SharedPreference data --------------------
-        studentData = getSharedPreferences(STUDENT_PREFERENCES, Context.MODE_PRIVATE);
-        studentDataEditor = studentData.edit();
+        userData = getSharedPreferences(USER_PREFERENCES, Context.MODE_PRIVATE);
+        userDataEditor = userData.edit();
         // -----------------------------------------------------------------
 
-        if(studentData.getInt(LOGIN_STAT, 0) == LOGGEDIN) {
-            Intent mainActivity = new Intent(LoginPageStudent.this, MainActivity.class);
+        if(userData.getInt(LOGIN_STAT, 0) == LOGGEDIN) {
+            Intent mainActivity = new Intent(LoginPage.this, MainActivity.class);
 
             startActivity(mainActivity);
             finish();
@@ -109,6 +95,14 @@ public class LoginPageStudent extends ActionBarActivity implements View.OnClickL
                 // login the user and make a session
                 inUsername = username.getText().toString().trim();
                 inPassword = password.getText().toString().trim();
+                inUserType = userTypeList.getSelectedItem().toString().trim();
+
+                if(inUserType.equalsIgnoreCase("Student"))
+                    inUserType = "student";
+                else if(inUserType.equalsIgnoreCase("Staff"))
+                    inUserType = "staff";
+                else if(inUserType.equalsIgnoreCase("Library Staff"))
+                    inUserType = "stafflibrary";
 
                 new LoginStudent().execute();
                 break;
@@ -135,8 +129,8 @@ public class LoginPageStudent extends ActionBarActivity implements View.OnClickL
             super.onPreExecute();
 
             // show progress dialog
-            pDialog = new ProgressDialog(LoginPageStudent.this);
-            pDialog.setMessage("Tunggu sebentar...");
+            pDialog = new ProgressDialog(LoginPage.this);
+            pDialog.setMessage("Please wait...");
             pDialog.setCancelable(false);
             pDialog.show();
         }
@@ -148,13 +142,14 @@ public class LoginPageStudent extends ActionBarActivity implements View.OnClickL
 
                 // ------------------------------ setup data for the post request ----------------------------------------------
                 List<NameValuePair> postData = new ArrayList<NameValuePair>();
-                postData.add(new BasicNameValuePair("username", "" + inUsername));
-                postData.add(new BasicNameValuePair("password", "" + inPassword));
+                postData.add(new BasicNameValuePair("inUsername", "" + inUsername));
+                postData.add(new BasicNameValuePair("inPassword", "" + inPassword));
+                postData.add(new BasicNameValuePair("inUserType", "" + inUserType));
                 // -------------------------------------------------------------------------------------------------------------
 
                 // ------------------ retrieve the requested data -------------------------------------------
                 // get the result from http post
-                String data = httpHandler.result("http://seladanghijau.netai.net/php/loginStudent.php", postData);
+                String data = httpHandler.result("http://seladanghijau.netai.net/php/login.php", postData);
 
                 if(httpHandler.getStatus() == HttpURLConnection.HTTP_OK) {
                     // retrieve data from JSON string
@@ -162,21 +157,35 @@ public class LoginPageStudent extends ActionBarActivity implements View.OnClickL
                     JSONArray jArray = jObj.getJSONArray("login");
 
                     // store all data for student in 'student' sharedPreference
-                    JSONObject studentJson = jArray.getJSONObject(0);
-                    if(studentJson.getInt("student_id") == -1) {
-                        return NOTLOGGEDIN;
-                    } else {
-                        studentDataEditor.putInt(LOGIN_STAT, LOGGEDIN);
-                        studentDataEditor.putInt(ID, studentJson.getInt("student_id"));
-                        studentDataEditor.commit();
+                    JSONObject userJson = jArray.getJSONObject(0);
+                    if(userJson.getInt("user_id") > 0) {
+                        userDataEditor.putInt(LOGIN_STAT, LOGGEDIN);
+                        userDataEditor.putInt("ID", userJson.getInt("user_id"));
+                        userDataEditor.putString("NAME", userJson.getString("user_name"));
+                        userDataEditor.putString("USERNAME", userJson.getString("user_username"));
+                        userDataEditor.putString("PASSWORD", userJson.getString("user_password"));
+                        userDataEditor.commit();
 
-                        return LOGGEDIN;
+                        return 0;
+                    } else if(userJson.getInt("user_id") < 0) {
+                        userDataEditor.putInt(LOGIN_STAT, NOTLOGGEDIN);
+                        userDataEditor.commit();
+
+                        return -1;
+                    } else if(userJson.getInt("user_id") <= -2) {
+                        userDataEditor.putInt(LOGIN_STAT, NOTLOGGEDIN);
+                        userDataEditor.commit();
+
+                        return -2;
                     }
                 }
                 // -------------------------------------------------------------------------------------------
             } catch(Exception e) { e.printStackTrace(); }
 
-            return NOTLOGGEDIN;
+            userDataEditor.putInt(LOGIN_STAT, NOTLOGGEDIN);
+            userDataEditor.commit();
+
+            return -2;
         }
 
         protected void onPostExecute(Integer result) {
@@ -187,48 +196,23 @@ public class LoginPageStudent extends ActionBarActivity implements View.OnClickL
                 pDialog.dismiss();
 
             switch(result) {
-                case LOGGEDIN:
+                case 0:
                     // action when user has successfully logged in
-                    Toast.makeText(LoginPageStudent.this, "Logged in", Toast.LENGTH_LONG).show();
-                    Intent mainActivity = new Intent(LoginPageStudent.this, MainActivity.class);
+                    Toast.makeText(LoginPage.this, "Logged in", Toast.LENGTH_LONG).show();
 
+                    Intent mainActivity = new Intent(LoginPage.this, MainActivity.class);
                     startActivity(mainActivity);
                     finish();
                     break;
-                case NOTLOGGEDIN:
+                case -1:
+                    Toast.makeText(LoginPage.this, "Incorrect username or password.", Toast.LENGTH_LONG).show();
+                    break;
+                case -2:
                     // action when user has failed to login
-                    Toast.makeText(LoginPageStudent.this, "There are error when logging in. Please try again later.", Toast.LENGTH_LONG).show();
+                    Toast.makeText(LoginPage.this, "There are error when logging in. Please try again later.", Toast.LENGTH_LONG).show();
                     break;
             }
         }
     }
     // ------------------------------------------------------------------------------------------------------------------
-
-    // --------------------------------------------------------------- actions for drawer -------------------------------------------------------------
-    protected void onPostCreate(Bundle savedInstanceState) { // used for syncing the state of the icon on left, up most of the screen
-        super.onPostCreate(savedInstanceState);
-
-        drawerListener.syncState(); // syncing the state of the icon on left, up most of the screen
-    }
-
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_main, menu);
-        return true;
-    }
-
-    public boolean onOptionsItemSelected(MenuItem item) { // handle action bar item click(top bar)
-        if(drawerListener.onOptionsItemSelected(item)) {
-            return true;
-        }
-
-        return super.onOptionsItemSelected(item);
-    }
-
-    public void onConfigurationChanged(Configuration newConfig) { // detect when the configuration(landscape or portrait) of the screen change
-        super.onConfigurationChanged(newConfig);
-
-        drawerListener.onConfigurationChanged(newConfig); // change to new configuration
-    }
-    // ---------------------------------------------------------------------------------------------------------------------------------------------------
 }

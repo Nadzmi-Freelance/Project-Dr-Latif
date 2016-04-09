@@ -17,6 +17,11 @@
         <item>Staff</item>
         <item>Library Staff</item>
     </string-array>
+    <string-array name="commentType">
+        <item>Positive</item>
+        <item>Neutral</item>
+        <item>Negative</item>
+    </string-array>
 
     <string name="title_activity_book_detail">BookDetail</string>
     <string name="title_activity_pdfviewer">PDFViewer</string>
@@ -24,6 +29,7 @@
     <string name="title_activity_register_page">RegisterPage</string>
     <string name="title_activity_login_page_student">LoginPageStudent</string>
     <string name="title_activity_logout_page">LogoutPage</string>
+    <string name="title_activity_input_comment">InputComment</string>
 
 
 </resources>

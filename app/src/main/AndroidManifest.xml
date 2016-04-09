@@ -11,7 +11,7 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity
-            android:name=".LoginPageStudent"
+            android:name=".LoginPage"
             android:label="@string/title_activity_login_page_student">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -31,6 +31,9 @@
         <activity
             android:name=".RegisterPage"
             android:label="@string/title_activity_register_page" />
+        <activity
+            android:name=".LogoutPage"
+            android:label="@string/title_activity_logout_page" />
         <!--
              ATTENTION: This was auto-generated to add Google Play services to your project for
              App Indexing.  See https://g.co/AppIndexing/AndroidStudio for more information.
@@ -40,8 +43,8 @@
             android:value="@integer/google_play_services_version" />
 
         <activity
-            android:name=".LogoutPage"
-            android:label="@string/title_activity_logout_page"></activity>
+            android:name=".InputComment"
+            android:label="@string/title_activity_input_comment"></activity>
     </application>
 
 </manifest>

@@ -1,7 +1,6 @@
 package com.example.seladanghijau.projectdrlatif;
 
 import android.app.ProgressDialog;
-import android.app.TabActivity;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.os.AsyncTask;
@@ -21,35 +20,14 @@ import android.widget.TabHost;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import org.apache.http.HttpEntity;
-import org.apache.http.HttpHost;
-import org.apache.http.HttpRequest;
-import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
-import org.apache.http.client.ClientProtocolException;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.ResponseHandler;
-import org.apache.http.client.entity.UrlEncodedFormEntity;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.client.methods.HttpUriRequest;
-import org.apache.http.conn.ClientConnectionManager;
-import org.apache.http.entity.StringEntity;
-import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.message.BasicHeader;
 import org.apache.http.message.BasicNameValuePair;
-import org.apache.http.params.HttpParams;
-import org.apache.http.protocol.HTTP;
-import org.apache.http.protocol.HttpContext;
-import org.apache.http.util.EntityUtils;
 import org.json.JSONArray;
 import org.json.JSONObject;
-import org.w3c.dom.Text;
 
-import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.jar.Attributes;
 
 public class BookDetail extends ActionBarActivity implements AdapterView.OnItemClickListener, View.OnClickListener {
     static ProgressDialog pDialog;
@@ -58,8 +36,9 @@ public class BookDetail extends ActionBarActivity implements AdapterView.OnItemC
     DrawerLayout drawerLayout;
     ListView menuList;
     TabHost tabHost;
-    Button viewPDF;
+    Button viewPDF, commentButton;
     TextView tajukBuku, accessionnoBuku, authorBuku;
+    ListView commentNeutral, commentPositive, commentNegative;
     String[] menus;
 
     // data from other activities
@@ -76,9 +55,13 @@ public class BookDetail extends ActionBarActivity implements AdapterView.OnItemC
         menuList = (ListView) findViewById(R.id.menuList);
         tabHost = (TabHost) findViewById(R.id.tabHost);
         viewPDF = (Button) findViewById(R.id.viewPDF);
+        commentButton = (Button) findViewById(R.id.comment);
         tajukBuku = (TextView) findViewById(R.id.tajukBuku);
         accessionnoBuku = (TextView) findViewById(R.id.accessionnoBuku);
         authorBuku = (TextView) findViewById(R.id.authorBuku);
+        commentPositive = (ListView) findViewById(R.id.commentPositive);
+        commentNeutral = (ListView) findViewById(R.id.commentNeutral);
+        commentNegative = (ListView) findViewById(R.id.commentNegative);
         // --------------------------------------------------------------
 
         // --------------------------------------- setOnClickListener ---------------------------------------
@@ -131,7 +114,7 @@ public class BookDetail extends ActionBarActivity implements AdapterView.OnItemC
 
             // show progress dialog
             pDialog = new ProgressDialog(BookDetail.this);
-            pDialog.setMessage("Tunggu sebentar...");
+            pDialog.setMessage("Please wait...");
             pDialog.setCancelable(false);
             pDialog.show();
         }
@@ -173,10 +156,10 @@ public class BookDetail extends ActionBarActivity implements AdapterView.OnItemC
             return false;
         }
 
-        protected void onPostExecute(Boolean tof) {
-            super.onPostExecute(tof);
+        protected void onPostExecute(Boolean result) {
+            super.onPostExecute(result);
 
-            if(tof) {
+            if(result) {
                 // ------------------------- set layout -------------------------------
                 tajukBuku.setText(book.getTitle());
                 authorBuku.setText(book.getAuthor());
@@ -199,6 +182,11 @@ public class BookDetail extends ActionBarActivity implements AdapterView.OnItemC
 
                 startActivity(pdfViewer);
                 break;
+            case R.id.comment:
+                Intent inputComment = new Intent(this, InputComment.class);
+
+                startActivity(inputComment);
+                break;
         }
     }
 
@@ -214,13 +202,6 @@ public class BookDetail extends ActionBarActivity implements AdapterView.OnItemC
                 Toast.makeText(this, "Error", Toast.LENGTH_LONG).show();
                 break;
         }
-    }
-
-    // I overide these function to make destroy this activity after user has exited it with back button,
-    // so that it will not burden the machine to handle many activities, thus increase speed of these application
-    public void onBackPressed() {
-        // super.onBackPressed();
-        // i comment the above command cuz i want to overide these method
     }
 
     public boolean onKeyDown(int keyCode, KeyEvent event) {
