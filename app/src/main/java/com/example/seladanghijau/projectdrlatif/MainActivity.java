@@ -106,7 +106,7 @@ public class MainActivity extends ActionBarActivity implements AdapterView.OnIte
         protected Boolean doInBackground(Void... params) {
             try {
                 HTTPHandler httpHandler = new HTTPHandler();
-                String responseData = httpHandler.result("http://seladanghijau.netai.net/php/retrieve.php");
+                String responseData = httpHandler.result("http://seladanghijau.netai.net/php/RetrieveBook.php");
 
                 if(httpHandler.getStatus() == HttpURLConnection.HTTP_OK) { // http request "OK": successfully connect to database
                     JSONObject jObj = new JSONObject(responseData);

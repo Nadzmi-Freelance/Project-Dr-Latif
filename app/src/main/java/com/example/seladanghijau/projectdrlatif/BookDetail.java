@@ -1,6 +1,7 @@
 package com.example.seladanghijau.projectdrlatif;
 
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.os.AsyncTask;
@@ -9,11 +10,14 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.view.KeyEvent;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TabHost;
@@ -30,8 +34,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class BookDetail extends ActionBarActivity implements AdapterView.OnItemClickListener, View.OnClickListener {
+    // elements in activity
     static ProgressDialog pDialog;
-
     ActionBarDrawerToggle drawerListener;
     DrawerLayout drawerLayout;
     ListView menuList;
@@ -41,10 +45,15 @@ public class BookDetail extends ActionBarActivity implements AdapterView.OnItemC
     ListView commentNeutral, commentPositive, commentNegative;
     String[] menus;
 
+    TextView debug;
+
     // data from other activities
     int book_id, pdf_id;
     String book_accessionno, book_author, book_title;
-    Book book;
+    static Book book;
+
+    // other attributes
+    String[][] user_name, user_comment;
 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -62,6 +71,8 @@ public class BookDetail extends ActionBarActivity implements AdapterView.OnItemC
         commentPositive = (ListView) findViewById(R.id.commentPositive);
         commentNeutral = (ListView) findViewById(R.id.commentNeutral);
         commentNegative = (ListView) findViewById(R.id.commentNegative);
+
+        debug = (TextView) findViewById(R.id.debug);
         // --------------------------------------------------------------
 
         // --------------------------------------- setOnClickListener ---------------------------------------
@@ -108,6 +119,7 @@ public class BookDetail extends ActionBarActivity implements AdapterView.OnItemC
         new getBookDetails().execute();
     }
 
+    // ----------------------------- private class AsyncTask -----------------------------
     private class getBookDetails extends AsyncTask<Void, Void, Boolean> {
         protected void onPreExecute() {
             super.onPreExecute();
@@ -126,18 +138,19 @@ public class BookDetail extends ActionBarActivity implements AdapterView.OnItemC
                 // -------------------- send http post request to request for book details data --------------------------------
                 HTTPHandler httpHandler = new HTTPHandler(); // setup HttpHandler object
 
+                // retrieve bookDetails
                 // ------------------------------ setup data for the post request ----------------------------------------------
-                List<NameValuePair> postData = new ArrayList<NameValuePair>();
-                postData.add(new BasicNameValuePair("book_id", "" + book_id));
+                List<NameValuePair> bookDetailData = new ArrayList<NameValuePair>();
+                bookDetailData.add(new BasicNameValuePair("book_id", "" + book_id));
                 // -------------------------------------------------------------------------------------------------------------
 
                 // ------------------ retrieve the requested data -------------------------------------------
                 // get the result from http post
-                String data = httpHandler.result("http://seladanghijau.netai.net/php/BookDetails.php", postData);
+                String bookData = httpHandler.result("http://seladanghijau.netai.net/php/BookDetails.php", bookDetailData);
 
                 if(httpHandler.getStatus() == HttpURLConnection.HTTP_OK) {
                     // retrieve data from JSON string
-                    JSONObject jObj = new JSONObject(data);
+                    JSONObject jObj = new JSONObject(bookData);
                     JSONArray jArray = jObj.getJSONArray("book_details");
 
                     JSONObject jsonObjData = jArray.getJSONObject(0);
@@ -147,9 +160,39 @@ public class BookDetail extends ActionBarActivity implements AdapterView.OnItemC
                     book_title = jsonObjData.getString("book_title");
 
                     book = new Book(book_id, pdf_id, book_accessionno, book_author, book_title);
-
-                    return true;
                 }
+
+                // retrieve comments
+                for(int x=1 ; x<=3 ; x++) {
+                    int comment_type = x;
+                    httpHandler = new HTTPHandler();
+
+                    // retrieve comments
+                    // ------------------------------ setup data for the post request ----------------------------------------------
+                    List<NameValuePair> commentDetailData = new ArrayList<NameValuePair>();
+                    commentDetailData.add(new BasicNameValuePair("book_id", "" + book_id));
+                    commentDetailData.add(new BasicNameValuePair("comment_type", "" + comment_type));
+                    // -------------------------------------------------------------------------------------------------------------
+
+                    // ------------------ retrieve the requested data -------------------------------------------
+                    // get the result from http post
+                    String commentData = httpHandler.result("http://seladanghijau.netai.net/php/RetrieveComment.php", commentDetailData);
+
+                    if(httpHandler.getStatus() == HttpURLConnection.HTTP_OK) {
+                        // retrieve data from JSON string
+                        JSONObject jObj = new JSONObject(commentData);
+                        JSONArray jArray = jObj.getJSONArray("comments");
+
+                        for(int y=0 ; y<jArray.length() ; y++) {
+                            JSONObject jsonObjData = jArray.getJSONObject(y);
+
+                            user_name[x][y] = jsonObjData.getString("user_name");
+                            user_comment[x][y] = jsonObjData.getString("user_comment");
+                        }
+                    }
+                }
+
+                return true;
                 // -------------------------------------------------------------------------------------------
             } catch(Exception e) { e.printStackTrace(); }
 
@@ -165,6 +208,11 @@ public class BookDetail extends ActionBarActivity implements AdapterView.OnItemC
                 authorBuku.setText(book.getAuthor());
                 accessionnoBuku.setText("Accession No. : " + book.getAccessionno());
                 // --------------------------------------------------------------------
+                // --------------------------- setAdapter for listviews ---------------------------------
+                commentPositive.setAdapter(new CommentListAdapter(BookDetail.this, user_name[0], user_comment[0]));
+                commentNeutral.setAdapter(new CommentListAdapter(BookDetail.this, user_name[1], user_comment[1]));
+                commentNegative.setAdapter(new CommentListAdapter(BookDetail.this, user_name[2], user_comment[2]));
+                // --------------------------------------------------------------------------------------
             }
 
             // dismiss progress dialog
@@ -172,7 +220,71 @@ public class BookDetail extends ActionBarActivity implements AdapterView.OnItemC
                 pDialog.dismiss();
         }
     }
+    // -----------------------------------------------------------------------------------
 
+    // ---------------------------- class CommentListAdapter ----------------------------
+    class CommentRow {
+        String userName, userComment;
+
+        CommentRow(String userName, String userComment) {
+            this.userName = userName;
+            this.userComment = userComment;
+        }
+    }
+
+    // list adapter for list of comments
+    class CommentListAdapter extends BaseAdapter {
+        private Context context;
+        private ArrayList<CommentRow> commentRowList;
+        private String[] userName, userComment;
+
+        public CommentListAdapter(Context context, String[] userName, String[] userComment) {
+            this.context = context;
+            this.userName = userName;
+            this.userComment = userComment;
+            commentRowList = new ArrayList<>();
+
+            for(int x=0 ; x<this.userName.length ; x++) {
+                commentRowList.add(new CommentRow(this.userName[x], this.userComment[x]));
+            }
+        }
+
+        public int getCount() {
+            return commentRowList.size();
+        }
+
+        public Object getItem(int position) {
+            return commentRowList.get(position);
+        }
+
+        public long getItemId(int position) {
+            return position;
+        }
+
+        public View getView(int position, View convertView, ViewGroup parent) {
+            /*
+            1- get root view
+            2- use root view to find other views
+            3- set view's values
+             */
+
+            // 1
+            LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+            View rowView = inflater.inflate(R.layout.comment_layout, parent, false);
+            // 2
+            TextView username = (TextView) rowView.findViewById(R.id.user_name);
+            TextView usercomment = (TextView) rowView.findViewById(R.id.user_comment);
+            // 3
+            CommentRow temp = commentRowList.get(position);
+            username.setText(temp.userName);
+            usercomment.setText(temp.userComment);
+
+            return rowView;
+        }
+    }
+    // ----------------------------------------------------------------------------------
+
+    // ------------------------------------ OnClick Events ------------------------------------
     public void onClick(View v) { // onClickListener
         switch (v.getId()) {
             case R.id.viewPDF:
@@ -213,8 +325,9 @@ public class BookDetail extends ActionBarActivity implements AdapterView.OnItemC
 
         return super.onKeyDown(keyCode, event);
     }
+    // ----------------------------------------------------------------------------------------
 
-    // --------------------------------------------------------------- actions for drawer -------------------------------------------------------------
+    // -------------------------------------- actions for drawer -------------------------------------------------
     protected void onPostCreate(Bundle savedInstanceState) { // used for syncing the state of the icon on left, up most of the screen
         super.onPostCreate(savedInstanceState);
 
@@ -240,5 +353,5 @@ public class BookDetail extends ActionBarActivity implements AdapterView.OnItemC
 
         drawerListener.onConfigurationChanged(newConfig); // change to new configuration
     }
-    // ---------------------------------------------------------------------------------------------------------------------------------------------------
+    // ------------------------------------------------------------------------------------------------------------
 }

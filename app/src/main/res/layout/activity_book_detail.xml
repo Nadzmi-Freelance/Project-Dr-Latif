@@ -18,7 +18,7 @@
 
             <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="match_parent"
                 android:layout_margin="10dp"
                 android:orientation="vertical">
 
@@ -94,10 +94,15 @@
                                 android:layout_height="match_parent"
                                 android:orientation="vertical">
 
+                                <TextView
+                                    android:id="@+id/debug"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content" />
+
                                 <ListView
                                     android:id="@+id/commentPositive"
                                     android:layout_width="match_parent"
-                                    android:layout_height="match_parent"
+                                    android:layout_height="200dp"
                                     android:layout_marginBottom="20dp"></ListView>
                             </LinearLayout>
 
@@ -110,7 +115,8 @@
                                 <ListView
                                     android:id="@+id/commentNeutral"
                                     android:layout_width="match_parent"
-                                    android:layout_height="wrap_content"/>
+                                    android:layout_height="200dp"
+                                    android:layout_marginBottom="20dp"></ListView>
                             </LinearLayout>
 
                             <LinearLayout
@@ -122,7 +128,8 @@
                                 <ListView
                                     android:id="@+id/commentNegative"
                                     android:layout_width="match_parent"
-                                    android:layout_height="wrap_content"/>
+                                    android:layout_height="200dp"
+                                    android:layout_marginBottom="20dp"></ListView>
                             </LinearLayout>
                         </FrameLayout>
                     </LinearLayout>
