@@ -1,29 +1,31 @@
 <?php
 include "connect.php";
 
-if(isset($_POST["book_id"])) {
-  $bookID = $_POST["book_id"];
-
-  $sql = "SELECT * FROM book_table WHERE ID LIKE $bookID";
-  $query = mysqli_query($conn, $sql) or die(mysql_error());
+if(isset($_POST)) {
+  $inBookID = $_POST["inBookId"];
 
   $jsonData = array();
-  if(mysqli_num_rows($query) > 0) {
-    $jsonData["book_details"] = array();
+  $jsonData["book_details"] = array();
 
-    while($data = mysqli_fetch_array($query)) {
-      $datas = array(
-        "pdf_id" => $data["PDF_ID"],
-        "book_accessionno" => $data["ACCESSIONNO"],
-        "book_author" => $data["AUTHOR"],
-        "book_title" => $data["TITLE"]
-      );
+  $bookDetailSQL = "SELECT * FROM book_table WHERE ID LIKE $inBookID";
+  $bookDetailQuery = mysqli_query($conn, $bookDetailSQL) or die(mysql_error());
 
-      array_push($jsonData["book_details"], $datas);
-    }
+  if(!empty($bookDetailQuery)) {
+    if(mysqli_num_rows($bookDetailQuery) > 0) {
+      while($row = mysqli_fetch_array($bookDetailQuery)) {
+        $result = array(
+          "message" => "success",
+          "pdf_id" => $row["PDF_ID"],
+          "book_accessionno" => $row["ACCESSIONNO"],
+          "book_author" => $row["AUTHOR"],
+          "book_title" => $row["TITLE"]
+        );
 
-    echo json_encode($jsonData);
-  }
+        array_push($jsonData["book_details"], $result);
+      }
+    } else $result = array("message" => "The book cannot be found in the database.");
+  } else $result = array("message" => "An error has occurred");
+
+  echo json_encode($jsonData);
 }
 ?>
-	

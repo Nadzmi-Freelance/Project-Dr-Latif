@@ -2,21 +2,21 @@
 include "connect.php";
 
 if(isset($_POST)) {
-  $book_id = $_POST["book_id"];
-  $comment_type = $_POST["comment_type"];
+  $inBookId = $_POST["inBookId"];
+  $inCommentType = $_POST["inCommentType"];
 
   // create array for json data
   $jsonData = array();
   $jsonData["comments"] = array();
 
-  $retrieveSQL = "SELECT student.NAME, comment.DESCRIPTION
+  $retrieveCommentSQL = "SELECT student.NAME, comment.DESCRIPTION
                   FROM student, comment
                   WHERE (
                       student.ID LIKE comment.USER_ID
                       AND
-                      comment.COMMENT_TYPE LIKE $comment_type
+                      comment.COMMENT_TYPE LIKE $inCommentType
                       AND
-                      comment.BOOK_ID like $book_id
+                      comment.BOOK_ID like $inBookId
                   )
 
                   UNION
@@ -26,9 +26,9 @@ if(isset($_POST)) {
                   WHERE (
                       staff.ID LIKE comment.USER_ID
                       AND
-                      comment.COMMENT_TYPE LIKE $comment_type
+                      comment.COMMENT_TYPE LIKE $inCommentType
                       AND
-                      comment.BOOK_ID like $book_id
+                      comment.BOOK_ID like $inBookId
                   )
 
                   UNION
@@ -38,24 +38,31 @@ if(isset($_POST)) {
                   WHERE (
                       stafflibrary.ID LIKE comment.USER_ID
                       AND
-                      comment.COMMENT_TYPE LIKE $comment_type
+                      comment.COMMENT_TYPE LIKE $inCommentType
                       AND
-                      comment.BOOK_ID like $book_id
+                      comment.BOOK_ID like $inBookId
                   )";
-  $retrieveQuery = mysqli_query($conn, $retrieveSQL);
+  $retrieveCommentQuery = mysqli_query($conn, $retrieveCommentSQL);
 
-  if(!empty($retrieveQuery)) {
-    if(mysqli_num_rows($retrieveQuery) > 0) {
-      while($row = mysqli_fetch_array($retrieveQuery)) {
+  if(!empty($retrieveCommentQuery)) {
+    if(mysqli_num_rows($retrieveCommentQuery) > 0) {
+      while($row = mysqli_fetch_array($retrieveCommentQuery)) {
         $result = array(
+          "message" => "success",
           "user_name" => $row["NAME"],
           "user_comment" => $row["DESCRIPTION"]
         );
 
         array_push($jsonData["comments"], $result);
       }
-    } else $result = array("message" => "no_record"); // return no record in database
-  } else $result = array("message" => "error"); // return error occurred
+    } else {
+      $result = array("message" => "no_record"); // return no record in database
+      array_push($jsonData["comments"], $result);
+    }
+  } else {
+    $result = array("message" => "error"); // return error occurred
+    array_push($jsonData["comments"], $result);
+  }
 
   echo json_encode($jsonData);
 }

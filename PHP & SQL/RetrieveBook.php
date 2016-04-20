@@ -1,21 +1,18 @@
 <?php
 include "connect.php";
 
-$jsonResponse = array();
-
 if(isset($_POST)) {
-  $query = mysqli_query($conn, "SELECT * FROM book_table");
+  $jsonResponse = array();
+  $jsonResponse["books"] = array();
 
-  if(!$query) {
-    die(mysql_error());
-  }
+  $selectSQL = "SELECT * FROM book_table";
+  $selectQuery = mysqli_query($conn, $selectSQL);
 
-  if(!empty($query)) {
-    if(mysqli_num_rows($query) > 0) {
-      $jsonResponse["books"] = array();
-
-      while($data = mysqli_fetch_array($query)) {
+  if(!empty($selectQuery)) {
+    if(mysqli_num_rows($selectQuery) > 0) {
+      while($data = mysqli_fetch_array($selectQuery)) {
         $result = array(
+          "message" => "success",
           "book_id" => $data["ID"],
           "book_accessionno" => $data["ACCESSIONNO"],
           "book_title" => $data["TITLE"],
@@ -25,11 +22,15 @@ if(isset($_POST)) {
 
         array_push($jsonResponse["books"], $result);
       }
-
-      echo json_encode($jsonResponse);
+    } else {
+      $result = array("message" => "error_record"); // record not found
+      array_push($jsonResponse["books"], $result);
     }
+  } else {
+    $result = array("message" => "error"); // an error has occurred
+    array_push($jsonResponse["books"], $result);
   }
-}
 
-mysqli_close($conn);
+  echo json_encode($jsonResponse);
+}
 ?>

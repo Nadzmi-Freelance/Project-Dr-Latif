@@ -6,7 +6,7 @@
     android:orientation="vertical"
     android:gravity="center_vertical"
     android:padding="10dp"
-    tools:context="com.example.seladanghijau.projectdrlatif.InputComment">
+    tools:context="com.example.seladanghijau.projectdrlatif.RegisterComment">
 
     <Spinner
         android:id="@+id/commentTypeList"
@@ -22,7 +22,7 @@
         android:ems="10"/>
 
     <Button
-        android:id="@+id/sendComment"
+        android:id="@+id/registerComment"
         android:text="SEND"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"/>

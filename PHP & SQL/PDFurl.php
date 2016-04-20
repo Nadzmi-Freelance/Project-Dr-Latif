@@ -2,33 +2,25 @@
 include "connect.php";
 
 if(isset($_POST)) {
-  $pdfid = $_POST["pdf_id"];
-
-  $sql = "SELECT pdf_url FROM PDF WHERE pdf_id LIKE $pdfid";
-  $query = mysqli_query($conn, $sql) or die(mysql_error());
+  $inPDFId = $_POST["inPDFId"];
 
   $jsonData = array();
-  if(mysqli_num_rows($query) > 0) {
-    $jsonData["pdf"] = array();
+  $jsonData["pdf"] = array();
 
-    $rows = mysqli_fetch_array($query);
-    $data = array(
-      "pdf_url" => $rows["pdf_url"]
-    );
+  $PDFUrlSQL = "SELECT pdf_url FROM PDF WHERE pdf_id LIKE $inPDFId";
+  $PDFUrlQuery = mysqli_query($conn, $PDFUrlSQL);
 
-    array_push($jsonData["pdf"], $data);
-  } else {
-    $jsonData["pdf"] = array();
+  if(!empty($PDFUrlQuery)) {
+    if(mysqli_num_rows($PDFUrlQuery) > 0) {
+      $rows = mysqli_fetch_array($PDFUrlQuery);
+      $result = array(
+        "message" => "success",
+        "pdf_url" => $rows["pdf_url"]
+      );
+    } else $result = array("message" => "no data");
+  } else $result = array("message" => "error");
 
-    $rows = mysqli_fetch_array($query);
-    $data = array(
-      "pdf_url" => "no data"
-    );
-
-    array_push($jsonData["pdf"], $data);
-  }
-
+  array_push($jsonData["pdf"], $result);
   echo json_encode($jsonData);
 }
 ?>
-		

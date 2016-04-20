@@ -9,11 +9,11 @@ if(isset($_POST)) {
   $inUsername = trim($_POST["inUsername"]);
   $inPassword = trim($_POST["inPassword"]);
 
-  if($userType!=null && $inName!=null && $inEmail!=null && $inUsername!=null && $inPassword!=null) {
-    // create array for json data
-    $jsonResponse = array();
-    $jsonResponse["register"] = array();
+  // create array for json data
+  $jsonResponse = array();
+  $jsonResponse["register"] = array();
 
+  if($userType!=null && $inName!=null && $inEmail!=null && $inUsername!=null && $inPassword!=null) {
     switch($userType) {
       case "student":
         $checkSql = "SELECT * FROM student WHERE ((USERNAME LIKE '$inUsername') AND (PASSWORD LIKE '$inPassword'))";

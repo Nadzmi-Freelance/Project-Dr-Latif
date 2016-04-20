@@ -27,6 +27,8 @@ public class PDFViewer extends ActionBarActivity {
     private int pdf_id;
     private String pdfLink;
 
+    String data;
+
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_pdfviewer);
@@ -35,7 +37,6 @@ public class PDFViewer extends ActionBarActivity {
         new GetPDF().execute();
     }
 
-    String data;
     private class GetPDF extends AsyncTask<Void, Void, Boolean> {
         protected void onPreExecute() {
             super.onPreExecute();
@@ -54,12 +55,12 @@ public class PDFViewer extends ActionBarActivity {
 
                 // ------------------------------ setup data for the post request ----------------------------------------------
                 List<NameValuePair> postData = new ArrayList<NameValuePair>();
-                postData.add(new BasicNameValuePair("pdf_id", "" + pdf_id));
+                postData.add(new BasicNameValuePair("inPDFId", "" + pdf_id));
                 // -------------------------------------------------------------------------------------------------------------
 
                 // ------------------ retrieve the requested data -------------------------------------------
                 // get the result from http post
-                data = httpHandler.result("http://seladanghijau.netai.net/php/PDFurl.php", postData);
+                data = httpHandler.result("http://uitmkedah.net/nadzmi/php/PDFurl.php", postData);
 
                 if (httpHandler.getStatus() == HttpURLConnection.HTTP_OK) {
                     // retrieve data from JSON string
@@ -67,9 +68,11 @@ public class PDFViewer extends ActionBarActivity {
                     JSONArray jArray = jObj.getJSONArray("pdf");
 
                     JSONObject jsonObjData = jArray.getJSONObject(0);
-                    pdfLink = jsonObjData.getString("pdf_url");
+                    if(jsonObjData.getString("message").toString().equalsIgnoreCase("success")) {
+                        pdfLink = jsonObjData.getString("pdf_url");
 
-                    return true;
+                        return true;
+                    } else return false;
                 }
                 // -------------------------------------------------------------------------------------------
             } catch(Exception e) { e.printStackTrace(); }
