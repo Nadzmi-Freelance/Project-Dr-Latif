@@ -43,6 +43,9 @@
     <string name="title_activity_login_page_student">LoginPageStudent</string>
     <string name="title_activity_logout_page">LogoutPage</string>
     <string name="title_activity_input_comment">InputComment</string>
+    <string name="title_activity_retrieve_comments">RetrieveComments</string>
+
+    <string name="hello_world">Hello world!</string>
 
 
 </resources>
