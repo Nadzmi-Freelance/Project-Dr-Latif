@@ -1,6 +1,8 @@
 package com.example.seladanghijau.projectdrlatif;
 
+import android.app.Activity;
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.os.AsyncTask;
@@ -9,11 +11,14 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.view.KeyEvent;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TabHost;
@@ -21,6 +26,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import org.apache.http.NameValuePair;
+import org.apache.http.impl.cookie.BasicCommentHandler;
 import org.apache.http.message.BasicNameValuePair;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -30,21 +36,20 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class BookDetail extends ActionBarActivity implements AdapterView.OnItemClickListener, View.OnClickListener {
+    // elements in activity
     static ProgressDialog pDialog;
-
     ActionBarDrawerToggle drawerListener;
     DrawerLayout drawerLayout;
     ListView menuList;
     TabHost tabHost;
-    Button viewPDF, commentButton;
+    Button viewPDF, registerComment, viewPositiveComment, viewNeutralComment, viewNegativeComment;
     TextView tajukBuku, accessionnoBuku, authorBuku;
     ListView commentNeutral, commentPositive, commentNegative;
     String[] menus;
 
     // data from other activities
-    int book_id, pdf_id;
-    String book_accessionno, book_author, book_title;
     Book book;
+    List<Comment> positiveCommentList, neutralCommentList, negativeCommentList;
 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -55,7 +60,10 @@ public class BookDetail extends ActionBarActivity implements AdapterView.OnItemC
         menuList = (ListView) findViewById(R.id.menuList);
         tabHost = (TabHost) findViewById(R.id.tabHost);
         viewPDF = (Button) findViewById(R.id.viewPDF);
-        commentButton = (Button) findViewById(R.id.comment);
+        registerComment = (Button) findViewById(R.id.registerComment);
+        viewPositiveComment = (Button) findViewById(R.id.viewPositiveComment);
+        viewNeutralComment = (Button) findViewById(R.id.viewNeutralComment);
+        viewNegativeComment = (Button) findViewById(R.id.viewNegativeComment);
         tajukBuku = (TextView) findViewById(R.id.tajukBuku);
         accessionnoBuku = (TextView) findViewById(R.id.accessionnoBuku);
         authorBuku = (TextView) findViewById(R.id.authorBuku);
@@ -66,6 +74,10 @@ public class BookDetail extends ActionBarActivity implements AdapterView.OnItemC
 
         // --------------------------------------- setOnClickListener ---------------------------------------
         viewPDF.setOnClickListener(this);
+        registerComment.setOnClickListener(this);
+        viewPositiveComment.setOnClickListener(this);
+        viewNeutralComment.setOnClickListener(this);
+        viewNegativeComment.setOnClickListener(this);
         // --------------------------------------------------------------------------------------------------
 
         // -------------- drawer actions --------------------
@@ -104,18 +116,24 @@ public class BookDetail extends ActionBarActivity implements AdapterView.OnItemC
         tabHost.addTab(neutralTabSpec);
         // ----------------------------------------------------
 
-        book_id = getIntent().getIntExtra("book_id", book_id); // get bundled data from previous activity
+        book = new Book();
+        book.setId(getIntent().getIntExtra("book_id", -1)); // get bundled data from previous activity
         new getBookDetails().execute();
+        new RetrieveComment().execute();
     }
 
+    // ----------------------------- private class AsyncTask -----------------------------
     private class getBookDetails extends AsyncTask<Void, Void, Boolean> {
+        int book_pdfID;
+        String book_accessionno, book_author, book_title;
+
         protected void onPreExecute() {
             super.onPreExecute();
 
             // show progress dialog
             pDialog = new ProgressDialog(BookDetail.this);
             pDialog.setMessage("Please wait...");
-            pDialog.setCancelable(false);
+            pDialog.setCancelable(true);
             pDialog.show();
         }
 
@@ -126,40 +144,44 @@ public class BookDetail extends ActionBarActivity implements AdapterView.OnItemC
                 // -------------------- send http post request to request for book details data --------------------------------
                 HTTPHandler httpHandler = new HTTPHandler(); // setup HttpHandler object
 
+                // retrieve bookDetails
                 // ------------------------------ setup data for the post request ----------------------------------------------
-                List<NameValuePair> postData = new ArrayList<NameValuePair>();
-                postData.add(new BasicNameValuePair("book_id", "" + book_id));
+                List<NameValuePair> bookDetailData = new ArrayList<NameValuePair>();
+                bookDetailData.add(new BasicNameValuePair("inBookId", "" + book.getId()));
                 // -------------------------------------------------------------------------------------------------------------
 
                 // ------------------ retrieve the requested data -------------------------------------------
                 // get the result from http post
-                String data = httpHandler.result("http://seladanghijau.netai.net/php/BookDetails.php", postData);
+                String bookData = httpHandler.result("http://uitmkedah.net/nadzmi/php/BookDetails.php", bookDetailData);
 
                 if(httpHandler.getStatus() == HttpURLConnection.HTTP_OK) {
                     // retrieve data from JSON string
-                    JSONObject jObj = new JSONObject(data);
+                    JSONObject jObj = new JSONObject(bookData);
                     JSONArray jArray = jObj.getJSONArray("book_details");
 
                     JSONObject jsonObjData = jArray.getJSONObject(0);
-                    pdf_id = jsonObjData.getInt("pdf_id");
-                    book_accessionno = jsonObjData.getString("book_accessionno");
-                    book_author = jsonObjData.getString("book_author");
-                    book_title = jsonObjData.getString("book_title");
-
-                    book = new Book(book_id, pdf_id, book_accessionno, book_author, book_title);
-
-                    return true;
-                }
+                    if(jsonObjData.getString("message").toString().equalsIgnoreCase("success")) {
+                        book_pdfID = jsonObjData.getInt("pdf_id");
+                        book_accessionno = jsonObjData.getString("book_accessionno");
+                        book_author = jsonObjData.getString("book_author");
+                        book_title = jsonObjData.getString("book_title");
+                    }
+                } else return false;
                 // -------------------------------------------------------------------------------------------
             } catch(Exception e) { e.printStackTrace(); }
 
-            return false;
+            return true;
         }
 
         protected void onPostExecute(Boolean result) {
             super.onPostExecute(result);
 
             if(result) {
+                book.setAccessionno(book_accessionno);
+                book.setPdfID(book_pdfID);
+                book.setAuthor(book_author);
+                book.setTitle(book_title);
+
                 // ------------------------- set layout -------------------------------
                 tajukBuku.setText(book.getTitle());
                 authorBuku.setText(book.getAuthor());
@@ -173,6 +195,108 @@ public class BookDetail extends ActionBarActivity implements AdapterView.OnItemC
         }
     }
 
+    class RetrieveComment extends AsyncTask<Void, Void, Boolean> {
+        protected void onPreExecute() {
+            super.onPreExecute();
+
+            // show progress dialog
+            pDialog = new ProgressDialog(BookDetail.this);
+            pDialog.setMessage("Please wait...");
+            pDialog.setCancelable(true);
+            pDialog.show();
+        }
+
+        protected Boolean doInBackground(Void... params) {
+            try {
+                // -------------------------------------- algorithm to retrieve comments ------------------------------------------
+                HTTPHandler httpHandler2 = new HTTPHandler();
+
+                positiveCommentList = new ArrayList<>();
+                neutralCommentList = new ArrayList<>();
+                negativeCommentList = new ArrayList<>();
+
+                // ------------------------------ setup data for the post request ----------------------------------------------
+                List<NameValuePair> commentPostData = new ArrayList<NameValuePair>();
+                commentPostData.add(new BasicNameValuePair("inBookId", "" + book.getId()));
+                // -------------------------------------------------------------------------------------------------------------
+
+                // ------------------ retrieve the requested data -------------------------------------------
+                // get the result from http post
+                String commentData = httpHandler2.result("http://uitmkedah.net/nadzmi/php/RetrieveComment.php", commentPostData);
+
+                if(httpHandler2.getStatus() == HttpURLConnection.HTTP_OK) {
+                    // retrieve data from JSON string
+                    JSONObject jObj = new JSONObject(commentData);
+                    JSONArray jArrayPositive = jObj.getJSONArray("positive_comments");
+                    JSONArray jArrayNeutral = jObj.getJSONArray("neutral_comments");
+                    JSONArray jArrayNegative = jObj.getJSONArray("negative_comments");
+
+                    for(int x=0 ; x<jArrayPositive.length() ; x++) {
+                        JSONObject jsonObject = jArrayPositive.getJSONObject(x);
+
+                        if(jsonObject.getString("message").toString().equalsIgnoreCase("success")) {
+                            String username = jsonObject.getString("user_name");
+                            String usercomment = jsonObject.getString("user_comment");
+                            positiveCommentList.add(new Comment(username, usercomment));
+                        } else if(jsonObject.getString("message").toString().equalsIgnoreCase("no_record")) {
+                            String username = "";
+                            String usercomment = "No one commented on this book yet. Be the first to comment.";
+                            positiveCommentList.add(new Comment(username, usercomment));
+                        } else return false;
+                    }
+
+                    for(int x=0 ; x<jArrayNeutral.length() ; x++) {
+                        JSONObject jsonObject = jArrayNeutral.getJSONObject(x);
+
+                        if(jsonObject.getString("message").toString().equalsIgnoreCase("success")) {
+                            String username = jsonObject.getString("user_name");
+                            String usercomment = jsonObject.getString("user_comment");
+                            neutralCommentList.add(new Comment(username, usercomment));
+                        } else if(jsonObject.getString("message").toString().equalsIgnoreCase("no_record")) {
+                            String username = "";
+                            String usercomment = "No one commented on this book yet. Be the first to comment.";
+                            positiveCommentList.add(new Comment(username, usercomment));
+                        } else return false;
+                    }
+
+                    for(int x=0 ; x<jArrayNegative.length() ; x++) {
+                        JSONObject jsonObject = jArrayNegative.getJSONObject(x);
+
+                        if(jsonObject.getString("message").toString().equalsIgnoreCase("success")) {
+                            String username = jsonObject.getString("user_name");
+                            String usercomment = jsonObject.getString("user_comment");
+                            negativeCommentList.add(new Comment(username, usercomment));
+                        } else if(jsonObject.getString("message").toString().equalsIgnoreCase("no_record")) {
+                            String username = "";
+                            String usercomment = "No one commented on this book yet. Be the first to comment.";
+                            positiveCommentList.add(new Comment(username, usercomment));
+                        } else return false;
+                    }
+                } else return false;
+                // -------------------------------------------------------------------------------------------
+            } catch(Exception e) { e.printStackTrace(); }
+
+            return true;
+        }
+
+        protected void onPostExecute(Boolean result) {
+            super.onPostExecute(result);
+
+            if(result) {
+                // --------------------------- setAdapter for listviews ---------------------------------
+                commentPositive.setAdapter(new CommentAdapter(BookDetail.this, positiveCommentList));
+                commentNeutral.setAdapter(new CommentAdapter(BookDetail.this, neutralCommentList));
+                commentNegative.setAdapter(new CommentAdapter(BookDetail.this, negativeCommentList));
+                // --------------------------------------------------------------------------------------
+            }
+
+            // dismiss progress dialog
+            if(pDialog.isShowing())
+                pDialog.dismiss();
+        }
+    }    // -----------------------------------------------------------------------------------
+
+    // ------------------------------------ OnClick Events ------------------------------------
     public void onClick(View v) { // onClickListener
         switch (v.getId()) {
             case R.id.viewPDF:
@@ -182,8 +306,32 @@ public class BookDetail extends ActionBarActivity implements AdapterView.OnItemC
 
                 startActivity(pdfViewer);
                 break;
-            case R.id.comment:
-                Intent inputComment = new Intent(this, InputComment.class);
+            case R.id.viewPositiveComment:
+                Intent viewPositiveComment = new Intent(this, RetrieveComments.class);
+
+                viewPositiveComment.putExtra("book_id", book.getId());
+                viewPositiveComment.putExtra("comment_type", "positive_comments");
+
+                startActivity(viewPositiveComment);
+                break;
+            case R.id.viewNeutralComment:
+                Intent viewNeutralComment = new Intent(this, RetrieveComments.class);
+
+                viewNeutralComment.putExtra("book_id", book.getId());
+                viewNeutralComment.putExtra("comment_type", "neutral_comments");
+
+                startActivity(viewNeutralComment);
+                break;
+            case R.id.viewNegativeComment:
+                Intent viewNegativeComment = new Intent(this, RetrieveComments.class);
+
+                viewNegativeComment.putExtra("book_id", book.getId());
+                viewNegativeComment.putExtra("comment_type", "negative_comments");
+
+                startActivity(viewNegativeComment);
+                break;
+            case R.id.registerComment:
+                Intent inputComment = new Intent(this, RegisterComment.class);
 
                 startActivity(inputComment);
                 break;
@@ -213,8 +361,9 @@ public class BookDetail extends ActionBarActivity implements AdapterView.OnItemC
 
         return super.onKeyDown(keyCode, event);
     }
+    // ----------------------------------------------------------------------------------------
 
-    // --------------------------------------------------------------- actions for drawer -------------------------------------------------------------
+    // -------------------------------------- actions for drawer -------------------------------------------------
     protected void onPostCreate(Bundle savedInstanceState) { // used for syncing the state of the icon on left, up most of the screen
         super.onPostCreate(savedInstanceState);
 
@@ -240,5 +389,103 @@ public class BookDetail extends ActionBarActivity implements AdapterView.OnItemC
 
         drawerListener.onConfigurationChanged(newConfig); // change to new configuration
     }
-    // ---------------------------------------------------------------------------------------------------------------------------------------------------
+    // ------------------------------------------------------------------------------------------------------------
+
+    // ------------------------------------ Other Classes -----------------------------------
+    class Book {
+        private int id, pdfID;
+        private String accessionno, author, title;
+
+        // constructors
+        public Book() {
+            id = 0;
+            pdfID = 0;
+            accessionno = null;
+            author = null;
+            title = null;
+        }
+
+        public Book(int id, int pdfID, String accessionno, String author, String title) {
+            this.id = id;
+            this.pdfID = pdfID;
+            this.accessionno = accessionno;
+            this.author = author;
+            this.title = title;
+        }
+
+        // getter and setter
+        public void setId(int id) { this.id = id; }
+        public void setPdfID(int pdfID) { this.pdfID = pdfID; }
+        public void setAccessionno(String accessionno) { this.accessionno = accessionno;}
+        public void setAuthor(String author) { this.author = author; }
+        public void setTitle(String title) { this.title = title; }
+
+        public int getId() { return id; }
+        public int getPdfID() { return pdfID; }
+        public String getAccessionno() { return accessionno; }
+        public String getAuthor() { return author; }
+        public String getTitle() { return title; }
+    }
+
+    class Comment {
+        private String username, usercomment;
+
+        public Comment(String username, String usercomment) {
+            this.username = username;
+            this.usercomment = usercomment;
+        }
+
+        public void setUsername(String username) { this.username = username; }
+        public void setUsercomment(String usercomment) { this.usercomment = usercomment; }
+
+        public String getUsername() { return username; }
+        public String getUsercomment() { return usercomment; }
+    }
+
+    class CommentHolder {
+        public TextView username, usercomment;
+
+        public CommentHolder(View base) {
+            username = (TextView) base.findViewById(R.id.username);
+            usercomment = (TextView) base.findViewById(R.id.usercomment);
+        }
+    }
+
+    class CommentAdapter extends BaseAdapter {
+        private List<Comment> commentList;
+        private Activity context;
+        private LayoutInflater layoutInflater;
+
+        public CommentAdapter(Activity context, List<Comment> commentList) {
+            this.context = context;
+            this.commentList = commentList;
+
+            layoutInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        }
+
+        public int getCount() { return commentList.size(); }
+        public Object getItem(int position) { return commentList.get(position); }
+        public long getItemId(int position) { return position; }
+
+        public View getView(int position, View convertView, ViewGroup parent) {
+            CommentHolder commentHolder;
+            View v = convertView;
+
+            if(convertView == null) {
+                LayoutInflater li = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+
+                v = li.inflate(R.layout.comment_layout, null);
+                commentHolder = new CommentHolder(v);
+                v.setTag(commentHolder);
+            } else {
+                commentHolder = (CommentHolder) v.getTag();
+            }
+
+            commentHolder.username.setText(commentList.get(position).getUsername());
+            commentHolder.usercomment.setText(commentList.get(position).getUsercomment());
+
+            return v;
+        }
+    }
+    // -----------------------------------------------------------------------------------
 }

@@ -12,10 +12,6 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <ScrollView
-            android:layout_width="match_parent"
-            android:layout_height="match_parent">
-
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
@@ -47,9 +43,8 @@
                 <ListView
                     android:id="@+id/listBuku"
                     android:layout_width="match_parent"
-                    android:layout_height="400dp"/>
+                    android:layout_height="match_parent" />
             </LinearLayout>
-        </ScrollView>
     </FrameLayout>
 
     <ListView

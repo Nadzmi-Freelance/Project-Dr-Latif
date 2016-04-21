@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.example.seladanghijau.projectdrlatif">
+    package="com.example.seladanghijau.projectdrlatif" >
 
     <uses-permission android:name="android.permission.INTERNET" />
 
@@ -9,10 +9,10 @@
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:supportsRtl="true"
-        android:theme="@style/AppTheme">
+        android:theme="@style/AppTheme" >
         <activity
             android:name=".LoginPage"
-            android:label="@string/title_activity_login_page_student">
+            android:label="@string/title_activity_login_page_student" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -34,6 +34,9 @@
         <activity
             android:name=".LogoutPage"
             android:label="@string/title_activity_logout_page" />
+        <activity
+            android:name=".RegisterComment"
+            android:label="@string/title_activity_input_comment" />
         <!--
              ATTENTION: This was auto-generated to add Google Play services to your project for
              App Indexing.  See https://g.co/AppIndexing/AndroidStudio for more information.
@@ -43,8 +46,9 @@
             android:value="@integer/google_play_services_version" />
 
         <activity
-            android:name=".InputComment"
-            android:label="@string/title_activity_input_comment"></activity>
+            android:name=".RetrieveComments"
+            android:label="@string/title_activity_retrieve_comments" >
+        </activity>
     </application>
 
 </manifest>

@@ -18,7 +18,7 @@
 
             <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="match_parent"
                 android:layout_margin="10dp"
                 android:orientation="vertical">
 
@@ -69,8 +69,6 @@
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:id="@+id/tabHost"
-                    android:layout_marginLeft="0dp"
-                    android:layout_marginRight="0dp"
                     android:layout_marginTop="10dp">
 
                     <LinearLayout
@@ -97,8 +95,13 @@
                                 <ListView
                                     android:id="@+id/commentPositive"
                                     android:layout_width="match_parent"
-                                    android:layout_height="match_parent"
-                                    android:layout_marginBottom="20dp"></ListView>
+                                    android:layout_height="250dp"></ListView>
+
+                                <Button
+                                    android:text="View All"
+                                    android:id="@+id/viewPositiveComment"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content" />
                             </LinearLayout>
 
                             <LinearLayout
@@ -110,7 +113,13 @@
                                 <ListView
                                     android:id="@+id/commentNeutral"
                                     android:layout_width="match_parent"
-                                    android:layout_height="wrap_content"/>
+                                    android:layout_height="250dp"></ListView>
+
+                                <Button
+                                    android:text="View All"
+                                    android:id="@+id/viewNeutralComment"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content" />
                             </LinearLayout>
 
                             <LinearLayout
@@ -122,17 +131,24 @@
                                 <ListView
                                     android:id="@+id/commentNegative"
                                     android:layout_width="match_parent"
-                                    android:layout_height="wrap_content"/>
+                                    android:layout_height="250dp"></ListView>
+
+                                <Button
+                                    android:text="View All"
+                                    android:id="@+id/viewNegativeComment"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content" />
                             </LinearLayout>
                         </FrameLayout>
                     </LinearLayout>
                 </TabHost>
 
                 <Button
-                    android:id="@+id/comment"
+                    android:id="@+id/registerComment"
                     android:text="COMMENT"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content" />
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="20dp"/>
             </LinearLayout>
         </ScrollView>
     </FrameLayout>

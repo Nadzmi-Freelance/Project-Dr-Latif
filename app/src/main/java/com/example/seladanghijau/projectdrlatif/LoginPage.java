@@ -131,7 +131,7 @@ public class LoginPage extends ActionBarActivity implements View.OnClickListener
             // show progress dialog
             pDialog = new ProgressDialog(LoginPage.this);
             pDialog.setMessage("Please wait...");
-            pDialog.setCancelable(false);
+            pDialog.setCancelable(true);
             pDialog.show();
         }
 
@@ -149,7 +149,7 @@ public class LoginPage extends ActionBarActivity implements View.OnClickListener
 
                 // ------------------ retrieve the requested data -------------------------------------------
                 // get the result from http post
-                String data = httpHandler.result("http://seladanghijau.netai.net/php/login.php", postData);
+                String data = httpHandler.result("http://uitmkedah.net/nadzmi/php/login.php", postData);
 
                 if(httpHandler.getStatus() == HttpURLConnection.HTTP_OK) {
                     // retrieve data from JSON string
@@ -161,13 +161,14 @@ public class LoginPage extends ActionBarActivity implements View.OnClickListener
                     if(userJson.getInt("user_id") > 0) {
                         userDataEditor.putInt(LOGIN_STAT, LOGGEDIN);
                         userDataEditor.putInt("ID", userJson.getInt("user_id"));
+                        userDataEditor.putString("TYPE", userJson.getString("user_type"));
                         userDataEditor.putString("NAME", userJson.getString("user_name"));
                         userDataEditor.putString("USERNAME", userJson.getString("user_username"));
                         userDataEditor.putString("PASSWORD", userJson.getString("user_password"));
                         userDataEditor.commit();
 
                         return 0;
-                    } else if(userJson.getInt("user_id") < 0) {
+                    } else if(userJson.getInt("user_id") == -1) {
                         userDataEditor.putInt(LOGIN_STAT, NOTLOGGEDIN);
                         userDataEditor.commit();
 

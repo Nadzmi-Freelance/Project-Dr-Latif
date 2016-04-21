@@ -13,7 +13,7 @@ if(isset($_POST)) {
     // create array for json data
     $jsonResponse = array();
     $jsonResponse["register"] = array();
-
+    
     switch($userType) {
       case "student":
         $checkSql = "SELECT * FROM student WHERE ((USERNAME LIKE '$inUsername') AND (PASSWORD LIKE '$inPassword'))";
