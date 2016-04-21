@@ -29,7 +29,6 @@ if(isset($_POST)) {
       while($row = mysqli_fetch_array($loginQuery)) {
         $result = array(
           "user_id" => $row["ID"],
-          "user_type" => $inUserType,
           "user_name" => $row["NAME"],
           "user_address" => $row["ADDRESS"],
           "user_email" => $row["EMAIL"],

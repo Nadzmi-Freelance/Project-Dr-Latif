@@ -4,7 +4,11 @@ include "connect.php";
 $jsonResponse = array();
 
 if(isset($_POST)) {
-  $query = mysqli_query($conn, "SELECT * FROM book_table") or die(mysql_error());
+  $query = mysqli_query($conn, "SELECT * FROM book_table");
+
+  if(!$query) {
+    die(mysql_error());
+  }
 
   if(!empty($query)) {
     if(mysqli_num_rows($query) > 0) {
