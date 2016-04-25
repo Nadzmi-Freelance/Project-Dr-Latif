@@ -4,9 +4,9 @@ import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.os.AsyncTask;
-import android.os.Bundle;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarActivity;
+import android.os.Bundle;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.view.KeyEvent;
 import android.view.Menu;
@@ -14,36 +14,50 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ListView;
-import android.widget.Toast;
 
+import org.apache.http.NameValuePair;
+import org.apache.http.message.BasicNameValuePair;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.net.HttpURLConnection;
 import java.util.ArrayList;
+import java.util.List;
 
-public class MainActivity extends ActionBarActivity implements AdapterView.OnItemClickListener {
+
+public class SearchBook extends ActionBarActivity implements View.OnClickListener, AdapterView.OnItemClickListener {
+    ProgressDialog pDialog;
     ActionBarDrawerToggle drawerListener;
     DrawerLayout drawerLayout;
-    ListView menuList, listBuku;
+    EditText txtSearchByTitle;
+    ListView lvListBook,menuList;
+    Button btnSearchByTitle, btnSearchAll;
+
     String[] menus;
-
-    ArrayList<String> listTajukBuku;
-
-    // book's details data
-    int[] book_id;
-
-    static ProgressDialog pDialog;
+    List<String> listTajukBuku;
+    String inBookTitle;
+    int[] bookId;
 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.activity_search_book);
 
-        // register android objects
+        // ------------------------ register activity objects ----------------------------------
         drawerLayout = (DrawerLayout) findViewById(R.id.drawerLayout);
+        txtSearchByTitle = (EditText) findViewById(R.id.txtSearchByTitle);
+        btnSearchByTitle = (Button) findViewById(R.id.btnSearchByTitle);
+        btnSearchAll = (Button) findViewById(R.id.btnSearchAll);
+        lvListBook = (ListView) findViewById(R.id.lvBookList);
         menuList = (ListView) findViewById(R.id.menuList);
-        listBuku = (ListView) findViewById(R.id.listBuku);
+        // -------------------------------------------------------------------------------------
+
+        // --------------------------- register OnClickListener -------------------------------
+        btnSearchByTitle.setOnClickListener(this);
+        btnSearchAll.setOnClickListener(this);
+        // ------------------------------------------------------------------------------------
 
         menus = getResources().getStringArray(R.array.menuMain); // get list of menus from xml file
         drawerListener = new ActionBarDrawerToggle(this, drawerLayout, 0, 0); // declare listener for drawer menu
@@ -54,40 +68,40 @@ public class MainActivity extends ActionBarActivity implements AdapterView.OnIte
         // list utk drawer
         menuList.setAdapter(new ArrayAdapter<>(this, R.layout.menulist_layout, menus)); // set a list of menus for the menu drawer
         menuList.setOnItemClickListener(this); // register click listener for each of the menus of the menu drawer
-
-        // load list buku
-        listTajukBuku = new ArrayList<>();
-        new LoadBookList().execute();
     }
 
-    // --------------------------------------------------- OnClick events ---------------------------------------------------------------
-    public void onItemClick(AdapterView<?> parent, View v, int position, long id) { // listen for item(menu) click in the menu drawer
-        switch (parent.getId()) { // get id utk AdapterView(ListView, GridView atau Spinner) yang kita click
-            case R.id.listBuku :
-                // ---------------------------------- go to BookDetail Activity --------------------------------------------
-                Intent i = new Intent(this, BookDetail.class);
+    // -------------------------------------------- OnClick Listener ----------------------------------------------------
+    public void onClick(View v) {
+        switch(v.getId()) {
+            case R.id.btnSearchAll:
+                Intent mainActivity = new Intent(this, MainActivity.class);
 
-                // put data to be brought to the second activity
-                i.putExtra("book_id", book_id[position]);
-
-                startActivity(i); // move to page BookDetail(create new activity based on BookDetail)
+                startActivity(mainActivity);
                 break;
-                // ---------------------------------------------------------------------------------------------------------
-            case R.id.menuList :
+            case R.id.btnSearchByTitle:
+                inBookTitle = txtSearchByTitle.getText().toString();
+
+                new GetBook().execute();
+                break;
+        }
+    }
+
+    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+        switch(parent.getId()) {
+            case R.id.menuList:
                 menuList.setItemChecked(position, true); // check the item that is being click to true
                 getSupportActionBar().setTitle(menus[position]); // set the title of the action bar(top bar) to the menu that has been clicked
 
                 switch(position) {
                     case 2:
-                        Intent logoutPage = new Intent(MainActivity.this, LogoutPage.class);
+                        Intent logoutPage = new Intent(SearchBook.this, LogoutPage.class);
                         startActivity(logoutPage);
                         break;
                 }
 
                 drawerLayout.closeDrawers(); // close the drawer when an item has been clicked
                 break;
-            default :
-                Toast.makeText(this, "Error", Toast.LENGTH_LONG).show();
+            case R.id.lvBookList:
                 break;
         }
     }
@@ -101,56 +115,59 @@ public class MainActivity extends ActionBarActivity implements AdapterView.OnIte
 
         return super.onKeyDown(keyCode, event);
     }
-    // -------------------------------------------------------------------------------------------------------------------------------------
+    // ---------------------------------------------------------------------------------------------------------------------
 
-    private class LoadBookList extends AsyncTask<Void, Void, Boolean> {
+    private class GetBook extends AsyncTask<Void, Void, Boolean> {
         protected void onPreExecute() {
             super.onPreExecute();
 
             // show progress dialog
-            pDialog = new ProgressDialog(MainActivity.this);
+            pDialog = new ProgressDialog(SearchBook.this);
             pDialog.setMessage("Please wait...");
             pDialog.setCancelable(false);
             pDialog.show();
         }
 
         protected Boolean doInBackground(Void... params) {
+            inBookTitle = txtSearchByTitle.getText().toString();
+
             try {
                 HTTPHandler httpHandler = new HTTPHandler();
-                String responseData = httpHandler.result("http://uitmkedah.net/nadzmi/php/RetrieveBook.php");
+
+                // ------------------------------ setup data for the post request ----------------------------------------------
+                List<NameValuePair> postData = new ArrayList<NameValuePair>();
+                postData.add(new BasicNameValuePair("inBookTitle", "" + inBookTitle));
+                // -------------------------------------------------------------------------------------------------------------
+
+                String responseData = httpHandler.result("http://seladanghijau.netai.net/php/SearchBook.php");
 
                 if(httpHandler.getStatus() == HttpURLConnection.HTTP_OK) { // http request "OK": successfully connect to database
                     JSONObject jObj = new JSONObject(responseData);
                     JSONArray jArray = jObj.getJSONArray("books");
 
-                    book_id = new int[jArray.length()]; // set the size according to the size of the json array
+                    bookId = new int[jArray.length()]; // set the size according to the size of the json array
                     for(int y=0 ; y<jArray.length() ; y++) { // retrieve suma data dari json
                         JSONObject tempJSON = jArray.getJSONObject(y);
 
                         // get data from JSON(elementarily)
                         String book_title = tempJSON.getString("book_title");
-                        book_id[y] = tempJSON.getInt("book_id");
+                        bookId[y] = tempJSON.getInt("book_id");
 
                         listTajukBuku.add(book_title); // retrieve tajuk buku masuk kedalam list buku
                     }
-
-                    return true; // return true because successfully carry on the operation
-                }
+                } return false;
             } catch (Exception e) { e.printStackTrace(); }
 
-            return false; // return false because unsuccessfully carry on the operation
+            return true; // return true because successfully carry on the operation
         }
 
         protected void onPostExecute(Boolean result) {
             super.onPostExecute(result);
 
-            // check if the retrieve operation is successful or not
             if(result) {
                 // list utk buku
-                listBuku.setAdapter(new ArrayAdapter<>(MainActivity.this, R.layout.menulist_layout, listTajukBuku)); // display list buku dalam arraylist ke ListView
-                listBuku.setOnItemClickListener(MainActivity.this); // set onclicklistener utk setiap item dlm ListView
-            } else {
-                pDialog.setMessage("Database error");
+                lvListBook.setAdapter(new ArrayAdapter<>(SearchBook.this, R.layout.menulist_layout, listTajukBuku)); // display list buku dalam arraylist ke ListView
+                lvListBook.setOnItemClickListener(SearchBook.this); // set onclicklistener utk setiap item dlm ListView
             }
 
             // dismiss progress dialog

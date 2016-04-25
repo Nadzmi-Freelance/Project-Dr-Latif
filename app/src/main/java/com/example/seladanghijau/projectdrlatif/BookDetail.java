@@ -36,7 +36,7 @@ public class BookDetail extends ActionBarActivity implements AdapterView.OnItemC
     DrawerLayout drawerLayout;
     ListView menuList;
     TabHost tabHost;
-    Button viewPDF, commentButton;
+    Button viewPDF, btnRegCommentPositive, btnRegCommentNegative, btnRegCommentNeutral;
     TextView tajukBuku, accessionnoBuku, authorBuku;
     ListView commentNeutral, commentPositive, commentNegative;
     String[] menus;
@@ -55,7 +55,9 @@ public class BookDetail extends ActionBarActivity implements AdapterView.OnItemC
         menuList = (ListView) findViewById(R.id.menuList);
         tabHost = (TabHost) findViewById(R.id.tabHost);
         viewPDF = (Button) findViewById(R.id.viewPDF);
-        commentButton = (Button) findViewById(R.id.comment);
+        btnRegCommentPositive = (Button) findViewById(R.id.btnRegCommentPositive);
+        btnRegCommentNeutral = (Button) findViewById(R.id.btnRegCommentNeutral);
+        btnRegCommentNegative = (Button) findViewById(R.id.btnRegCommentNegative);
         tajukBuku = (TextView) findViewById(R.id.tajukBuku);
         accessionnoBuku = (TextView) findViewById(R.id.accessionnoBuku);
         authorBuku = (TextView) findViewById(R.id.authorBuku);
@@ -66,6 +68,9 @@ public class BookDetail extends ActionBarActivity implements AdapterView.OnItemC
 
         // --------------------------------------- setOnClickListener ---------------------------------------
         viewPDF.setOnClickListener(this);
+        btnRegCommentPositive.setOnClickListener(this);
+        btnRegCommentNeutral.setOnClickListener(this);
+        btnRegCommentNegative.setOnClickListener(this);
         // --------------------------------------------------------------------------------------------------
 
         // -------------- drawer actions --------------------
@@ -133,7 +138,7 @@ public class BookDetail extends ActionBarActivity implements AdapterView.OnItemC
 
                 // ------------------ retrieve the requested data -------------------------------------------
                 // get the result from http post
-                String data = httpHandler.result("http://seladanghijau.netai.net/php/BookDetails.php", postData);
+                String data = httpHandler.result("http://uitmkedah.net/nadzmi/php/BookDetails.php", postData);
 
                 if(httpHandler.getStatus() == HttpURLConnection.HTTP_OK) {
                     // retrieve data from JSON string
@@ -182,10 +187,26 @@ public class BookDetail extends ActionBarActivity implements AdapterView.OnItemC
 
                 startActivity(pdfViewer);
                 break;
-            case R.id.comment:
-                Intent inputComment = new Intent(this, InputComment.class);
+            case R.id.btnRegCommentPositive:
+                Intent regPosComment = new Intent(this, RegisterComment.class);
+                regPosComment.putExtra("comment_type", 1);
+                regPosComment.putExtra("book_id", book.getId());
 
-                startActivity(inputComment);
+                startActivity(regPosComment);
+                break;
+            case R.id.btnRegCommentNeutral:
+                Intent regNeuComment = new Intent(this, RegisterComment.class);
+                regNeuComment.putExtra("comment_type", 3);
+                regNeuComment.putExtra("book_id", book.getId());
+
+                startActivity(regNeuComment);
+                break;
+            case R.id.btnRegCommentNegative:
+                Intent regNegComment = new Intent(this, RegisterComment.class);
+                regNegComment.putExtra("comment_type", 2);
+                regNegComment.putExtra("book_id", book.getId());
+
+                startActivity(regNegComment);
                 break;
         }
     }
