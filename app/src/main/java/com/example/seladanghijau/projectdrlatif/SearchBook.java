@@ -1,9 +1,7 @@
 package com.example.seladanghijau.projectdrlatif;
 
-import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.res.Configuration;
-import android.os.AsyncTask;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
@@ -15,17 +13,7 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.ListView;
-
-import org.apache.http.NameValuePair;
-import org.apache.http.message.BasicNameValuePair;
-import org.json.JSONArray;
-import org.json.JSONObject;
-
-import java.net.HttpURLConnection;
-import java.util.ArrayList;
-import java.util.List;
 
 
 public class SearchBook extends ActionBarActivity implements View.OnClickListener, AdapterView.OnItemClickListener {
@@ -98,7 +86,7 @@ public class SearchBook extends ActionBarActivity implements View.OnClickListene
 
                 switch(position) {
                     case 2:
-                        Intent logoutPage = new Intent(SearchBook.this, LogoutPage.class);
+                        Intent logoutPage = new Intent(SearchBook.this, UserProfile.class);
                         startActivity(logoutPage);
                         break;
                 }

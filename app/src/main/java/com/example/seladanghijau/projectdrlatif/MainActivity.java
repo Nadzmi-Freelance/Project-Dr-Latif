@@ -83,7 +83,7 @@ public class MainActivity extends ActionBarActivity implements AdapterView.OnIte
 
                 switch(position) {
                     case 2:
-                        Intent logoutPage = new Intent(MainActivity.this, LogoutPage.class);
+                        Intent logoutPage = new Intent(MainActivity.this, UserProfile.class);
                         startActivity(logoutPage);
                         break;
                 }

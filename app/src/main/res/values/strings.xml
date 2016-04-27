@@ -1,11 +1,11 @@
 <resources>
-    <string name="app_name">Project Dr Latif</string>
+    <string name="app_name">NDLS</string>
     <string name="action_settings">Settings</string>
 
     <string-array name="menuMain">
-        <item>Menu 1</item>
-        <item>Menu 2</item>
-        <item>Log Out</item>
+        <item>Dashboard</item>
+        <item>Search Books</item>
+        <item>Profile</item>
     </string-array>
     <string-array name="menuLogin">
         <item>Student</item>
@@ -23,30 +23,14 @@
         <item>Negative</item>
     </string-array>
 
-    <!-- Test data for CustomAdapters -->
-    <string-array name="test_username">
-        <item>nadzmi</item>
-        <item>mie</item>
-        <item>nazme</item>
-    </string-array>
-    <string-array name="test_usercomment">
-        <item>suka</item>
-        <item>suka</item>
-        <item>suka</item>
-    </string-array>
-    <!-- =========================== -->
-
     <string name="title_activity_book_detail">BookDetail</string>
     <string name="title_activity_pdfviewer">PDFViewer</string>
-    <string name="title_activity_login_page">LoginPage</string>
-    <string name="title_activity_register_page">RegisterPage</string>
-    <string name="title_activity_login_page_student">LoginPageStudent</string>
-    <string name="title_activity_logout_page">LogoutPage</string>
+    <string name="title_activity_login_page">Login</string>
+    <string name="title_activity_register_page">Register</string>
+    <string name="title_activity_user_profile">Profile</string>
     <string name="title_activity_register_comment">RetrieveComments</string>
     <string name="title_activity_search_book">SearchBook</string>
     <string name="title_activity_retrieve_comments">RetrieveComments</string>
     <string name="title_activity_search_book_title">SearchBookTitle</string>
-
-    <string name="hello_world">Hello world!</string>
     <string name="title_activity_search_book_author">SearchBookAuthor</string>
 </resources>

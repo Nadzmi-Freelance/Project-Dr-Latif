@@ -32,7 +32,7 @@
             android:name=".RegisterPage"
             android:label="@string/title_activity_register_page" />
         <activity
-            android:name=".LogoutPage"
+            android:name=".UserProfile"
             android:label="@string/title_activity_logout_page" />
         <activity
             android:name=".RegisterComment"
