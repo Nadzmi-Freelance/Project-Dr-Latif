@@ -42,10 +42,11 @@
     <string name="title_activity_register_page">RegisterPage</string>
     <string name="title_activity_login_page_student">LoginPageStudent</string>
     <string name="title_activity_logout_page">LogoutPage</string>
-    <string name="title_activity_input_comment">InputComment</string>
+    <string name="title_activity_register_comment">RetrieveComments</string>
+    <string name="title_activity_search_book">SearchBook</string>
     <string name="title_activity_retrieve_comments">RetrieveComments</string>
+    <string name="title_activity_search_book_title">SearchBookTitle</string>
 
     <string name="hello_world">Hello world!</string>
-
-
+    <string name="title_activity_search_book_author">SearchBookAuthor</string>
 </resources>

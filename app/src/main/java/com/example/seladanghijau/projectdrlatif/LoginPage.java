@@ -80,9 +80,9 @@ public class LoginPage extends ActionBarActivity implements View.OnClickListener
         // -----------------------------------------------------------------
 
         if(userData.getInt(LOGIN_STAT, 0) == LOGGEDIN) {
-            Intent mainActivity = new Intent(LoginPage.this, MainActivity.class);
+            Intent searchBook = new Intent(LoginPage.this, SearchBook.class);
 
-            startActivity(mainActivity);
+            startActivity(searchBook);
             finish();
         }
     }
@@ -165,6 +165,7 @@ public class LoginPage extends ActionBarActivity implements View.OnClickListener
                         userDataEditor.putString("NAME", userJson.getString("user_name"));
                         userDataEditor.putString("USERNAME", userJson.getString("user_username"));
                         userDataEditor.putString("PASSWORD", userJson.getString("user_password"));
+                        userDataEditor.putString("USERTYPE", userJson.getString("user_type"));
                         userDataEditor.commit();
 
                         return 0;
@@ -201,8 +202,8 @@ public class LoginPage extends ActionBarActivity implements View.OnClickListener
                     // action when user has successfully logged in
                     Toast.makeText(LoginPage.this, "Logged in", Toast.LENGTH_LONG).show();
 
-                    Intent mainActivity = new Intent(LoginPage.this, MainActivity.class);
-                    startActivity(mainActivity);
+                    Intent searchBook = new Intent(LoginPage.this, SearchBook.class);
+                    startActivity(searchBook);
                     finish();
                     break;
                 case -1:

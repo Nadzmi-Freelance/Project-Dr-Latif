@@ -26,7 +26,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import org.apache.http.NameValuePair;
-import org.apache.http.impl.cookie.BasicCommentHandler;
 import org.apache.http.message.BasicNameValuePair;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -42,7 +41,8 @@ public class BookDetail extends ActionBarActivity implements AdapterView.OnItemC
     DrawerLayout drawerLayout;
     ListView menuList;
     TabHost tabHost;
-    Button viewPDF, registerComment, viewPositiveComment, viewNeutralComment, viewNegativeComment;
+    Button btnRegCommentPositive, btnRegCommentNegative, btnRegCommentNeutral;
+    Button viewPDF, viewPositiveComment, viewNeutralComment, viewNegativeComment;
     TextView tajukBuku, accessionnoBuku, authorBuku;
     ListView commentNeutral, commentPositive, commentNegative;
     String[] menus;
@@ -60,7 +60,9 @@ public class BookDetail extends ActionBarActivity implements AdapterView.OnItemC
         menuList = (ListView) findViewById(R.id.menuList);
         tabHost = (TabHost) findViewById(R.id.tabHost);
         viewPDF = (Button) findViewById(R.id.viewPDF);
-        registerComment = (Button) findViewById(R.id.registerComment);
+        btnRegCommentPositive = (Button) findViewById(R.id.btnRegCommentPositive);
+        btnRegCommentNeutral = (Button) findViewById(R.id.btnRegCommentNeutral);
+        btnRegCommentNegative = (Button) findViewById(R.id.btnRegCommentNegative);
         viewPositiveComment = (Button) findViewById(R.id.viewPositiveComment);
         viewNeutralComment = (Button) findViewById(R.id.viewNeutralComment);
         viewNegativeComment = (Button) findViewById(R.id.viewNegativeComment);
@@ -74,7 +76,9 @@ public class BookDetail extends ActionBarActivity implements AdapterView.OnItemC
 
         // --------------------------------------- setOnClickListener ---------------------------------------
         viewPDF.setOnClickListener(this);
-        registerComment.setOnClickListener(this);
+        btnRegCommentPositive.setOnClickListener(this);
+        btnRegCommentNeutral.setOnClickListener(this);
+        btnRegCommentNegative.setOnClickListener(this);
         viewPositiveComment.setOnClickListener(this);
         viewNeutralComment.setOnClickListener(this);
         viewNegativeComment.setOnClickListener(this);
@@ -146,7 +150,7 @@ public class BookDetail extends ActionBarActivity implements AdapterView.OnItemC
 
                 // retrieve bookDetails
                 // ------------------------------ setup data for the post request ----------------------------------------------
-                List<NameValuePair> bookDetailData = new ArrayList<NameValuePair>();
+                List<NameValuePair> bookDetailData = new ArrayList<>();
                 bookDetailData.add(new BasicNameValuePair("inBookId", "" + book.getId()));
                 // -------------------------------------------------------------------------------------------------------------
 
@@ -160,7 +164,7 @@ public class BookDetail extends ActionBarActivity implements AdapterView.OnItemC
                     JSONArray jArray = jObj.getJSONArray("book_details");
 
                     JSONObject jsonObjData = jArray.getJSONObject(0);
-                    if(jsonObjData.getString("message").toString().equalsIgnoreCase("success")) {
+                    if(jsonObjData.getString("message").equalsIgnoreCase("success")) {
                         book_pdfID = jsonObjData.getInt("pdf_id");
                         book_accessionno = jsonObjData.getString("book_accessionno");
                         book_author = jsonObjData.getString("book_author");
@@ -216,7 +220,7 @@ public class BookDetail extends ActionBarActivity implements AdapterView.OnItemC
                 negativeCommentList = new ArrayList<>();
 
                 // ------------------------------ setup data for the post request ----------------------------------------------
-                List<NameValuePair> commentPostData = new ArrayList<NameValuePair>();
+                List<NameValuePair> commentPostData = new ArrayList<>();
                 commentPostData.add(new BasicNameValuePair("inBookId", "" + book.getId()));
                 // -------------------------------------------------------------------------------------------------------------
 
@@ -234,42 +238,48 @@ public class BookDetail extends ActionBarActivity implements AdapterView.OnItemC
                     for(int x=0 ; x<jArrayPositive.length() ; x++) {
                         JSONObject jsonObject = jArrayPositive.getJSONObject(x);
 
-                        if(jsonObject.getString("message").toString().equalsIgnoreCase("success")) {
+                        if(jsonObject.getString("message").equalsIgnoreCase("success")) {
                             String username = jsonObject.getString("user_name");
                             String usercomment = jsonObject.getString("user_comment");
                             positiveCommentList.add(new Comment(username, usercomment));
-                        } else if(jsonObject.getString("message").toString().equalsIgnoreCase("no_record")) {
+                        } else if(jsonObject.getString("message").equalsIgnoreCase("no_record")) {
                             String username = "";
                             String usercomment = "No one commented on this book yet. Be the first to comment.";
                             positiveCommentList.add(new Comment(username, usercomment));
+
+                            break;
                         } else return false;
                     }
 
                     for(int x=0 ; x<jArrayNeutral.length() ; x++) {
                         JSONObject jsonObject = jArrayNeutral.getJSONObject(x);
 
-                        if(jsonObject.getString("message").toString().equalsIgnoreCase("success")) {
+                        if(jsonObject.getString("message").equalsIgnoreCase("success")) {
                             String username = jsonObject.getString("user_name");
                             String usercomment = jsonObject.getString("user_comment");
                             neutralCommentList.add(new Comment(username, usercomment));
-                        } else if(jsonObject.getString("message").toString().equalsIgnoreCase("no_record")) {
+                        } else if(jsonObject.getString("message").equalsIgnoreCase("no_record")) {
                             String username = "";
                             String usercomment = "No one commented on this book yet. Be the first to comment.";
                             positiveCommentList.add(new Comment(username, usercomment));
+
+                            break;
                         } else return false;
                     }
 
                     for(int x=0 ; x<jArrayNegative.length() ; x++) {
                         JSONObject jsonObject = jArrayNegative.getJSONObject(x);
 
-                        if(jsonObject.getString("message").toString().equalsIgnoreCase("success")) {
+                        if(jsonObject.getString("message").equalsIgnoreCase("success")) {
                             String username = jsonObject.getString("user_name");
                             String usercomment = jsonObject.getString("user_comment");
                             negativeCommentList.add(new Comment(username, usercomment));
-                        } else if(jsonObject.getString("message").toString().equalsIgnoreCase("no_record")) {
+                        } else if(jsonObject.getString("message").equalsIgnoreCase("no_record")) {
                             String username = "";
                             String usercomment = "No one commented on this book yet. Be the first to comment.";
                             positiveCommentList.add(new Comment(username, usercomment));
+
+                            break;
                         } else return false;
                     }
                 } else return false;
@@ -330,10 +340,26 @@ public class BookDetail extends ActionBarActivity implements AdapterView.OnItemC
 
                 startActivity(viewNegativeComment);
                 break;
-            case R.id.registerComment:
-                Intent inputComment = new Intent(this, RegisterComment.class);
+            case R.id.btnRegCommentPositive:
+                Intent regPosComment = new Intent(this, RegisterComment.class);
+                regPosComment.putExtra("comment_type", 1);
+                regPosComment.putExtra("book_id", book.getId());
 
-                startActivity(inputComment);
+                startActivity(regPosComment);
+                break;
+            case R.id.btnRegCommentNeutral:
+                Intent regNeuComment = new Intent(this, RegisterComment.class);
+                regNeuComment.putExtra("comment_type", 3);
+                regNeuComment.putExtra("book_id", book.getId());
+
+                startActivity(regNeuComment);
+                break;
+            case R.id.btnRegCommentNegative:
+                Intent regNegComment = new Intent(this, RegisterComment.class);
+                regNegComment.putExtra("comment_type", 2);
+                regNegComment.putExtra("book_id", book.getId());
+
+                startActivity(regNegComment);
                 break;
         }
     }
@@ -377,10 +403,6 @@ public class BookDetail extends ActionBarActivity implements AdapterView.OnItemC
     }
 
     public boolean onOptionsItemSelected(MenuItem item) { // handle action bar item click(top bar)
-        if(drawerListener.onOptionsItemSelected(item)) {
-            return true;
-        }
-
         return super.onOptionsItemSelected(item);
     }
 
@@ -489,3 +511,4 @@ public class BookDetail extends ActionBarActivity implements AdapterView.OnItemC
     }
     // -----------------------------------------------------------------------------------
 }
+
