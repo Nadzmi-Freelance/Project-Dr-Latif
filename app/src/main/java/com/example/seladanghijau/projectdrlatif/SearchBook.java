@@ -29,17 +29,14 @@ import java.util.List;
 
 
 public class SearchBook extends ActionBarActivity implements View.OnClickListener, AdapterView.OnItemClickListener {
-    ProgressDialog pDialog;
+    // activity elements
     ActionBarDrawerToggle drawerListener;
     DrawerLayout drawerLayout;
-    EditText txtSearchByTitle;
-    ListView lvListBook,menuList;
-    Button btnSearchByTitle, btnSearchAll;
+    ListView menuList;
+    Button btnSearchByTitle, btnSearchByAuthor, btnSearchAll;
 
+    // other variables
     String[] menus;
-    List<String> listTajukBuku;
-    String inBookTitle;
-    int[] bookId;
 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -47,18 +44,19 @@ public class SearchBook extends ActionBarActivity implements View.OnClickListene
 
         // ------------------------ register activity objects ----------------------------------
         drawerLayout = (DrawerLayout) findViewById(R.id.drawerLayout);
-        txtSearchByTitle = (EditText) findViewById(R.id.txtSearchByTitle);
         btnSearchByTitle = (Button) findViewById(R.id.btnSearchByTitle);
+        btnSearchByAuthor = (Button) findViewById(R.id.btnSearchByAuthor);
         btnSearchAll = (Button) findViewById(R.id.btnSearchAll);
-        lvListBook = (ListView) findViewById(R.id.lvBookList);
         menuList = (ListView) findViewById(R.id.menuList);
         // -------------------------------------------------------------------------------------
 
         // --------------------------- register OnClickListener -------------------------------
         btnSearchByTitle.setOnClickListener(this);
+        btnSearchByAuthor.setOnClickListener(this);
         btnSearchAll.setOnClickListener(this);
         // ------------------------------------------------------------------------------------
 
+        // -------------------------------------- menu dalam drawer ---------------------------------------------
         menus = getResources().getStringArray(R.array.menuMain); // get list of menus from xml file
         drawerListener = new ActionBarDrawerToggle(this, drawerLayout, 0, 0); // declare listener for drawer menu
         drawerLayout.setDrawerListener(drawerListener); // register listener for drawer menu
@@ -68,6 +66,7 @@ public class SearchBook extends ActionBarActivity implements View.OnClickListene
         // list utk drawer
         menuList.setAdapter(new ArrayAdapter<>(this, R.layout.menulist_layout, menus)); // set a list of menus for the menu drawer
         menuList.setOnItemClickListener(this); // register click listener for each of the menus of the menu drawer
+        // -----------------------------------------------------------------------------------------------------
     }
 
     // -------------------------------------------- OnClick Listener ----------------------------------------------------
@@ -79,9 +78,14 @@ public class SearchBook extends ActionBarActivity implements View.OnClickListene
                 startActivity(mainActivity);
                 break;
             case R.id.btnSearchByTitle:
-                inBookTitle = txtSearchByTitle.getText().toString();
+                Intent searchBookTitle = new Intent(this, SearchBookTitle.class);
 
-                new GetBook().execute();
+                startActivity(searchBookTitle);
+                break;
+            case R.id.btnSearchByAuthor:
+                Intent searchBookAuthor = new Intent(this, SearchBookAuthor.class);
+
+                startActivity(searchBookAuthor);
                 break;
         }
     }
@@ -101,8 +105,6 @@ public class SearchBook extends ActionBarActivity implements View.OnClickListene
 
                 drawerLayout.closeDrawers(); // close the drawer when an item has been clicked
                 break;
-            case R.id.lvBookList:
-                break;
         }
     }
 
@@ -116,65 +118,6 @@ public class SearchBook extends ActionBarActivity implements View.OnClickListene
         return super.onKeyDown(keyCode, event);
     }
     // ---------------------------------------------------------------------------------------------------------------------
-
-    private class GetBook extends AsyncTask<Void, Void, Boolean> {
-        protected void onPreExecute() {
-            super.onPreExecute();
-
-            // show progress dialog
-            pDialog = new ProgressDialog(SearchBook.this);
-            pDialog.setMessage("Please wait...");
-            pDialog.setCancelable(false);
-            pDialog.show();
-        }
-
-        protected Boolean doInBackground(Void... params) {
-            inBookTitle = txtSearchByTitle.getText().toString();
-
-            try {
-                HTTPHandler httpHandler = new HTTPHandler();
-
-                // ------------------------------ setup data for the post request ----------------------------------------------
-                List<NameValuePair> postData = new ArrayList<NameValuePair>();
-                postData.add(new BasicNameValuePair("inBookTitle", "" + inBookTitle));
-                // -------------------------------------------------------------------------------------------------------------
-
-                String responseData = httpHandler.result("http://seladanghijau.netai.net/php/SearchBook.php");
-
-                if(httpHandler.getStatus() == HttpURLConnection.HTTP_OK) { // http request "OK": successfully connect to database
-                    JSONObject jObj = new JSONObject(responseData);
-                    JSONArray jArray = jObj.getJSONArray("books");
-
-                    bookId = new int[jArray.length()]; // set the size according to the size of the json array
-                    for(int y=0 ; y<jArray.length() ; y++) { // retrieve suma data dari json
-                        JSONObject tempJSON = jArray.getJSONObject(y);
-
-                        // get data from JSON(elementarily)
-                        String book_title = tempJSON.getString("book_title");
-                        bookId[y] = tempJSON.getInt("book_id");
-
-                        listTajukBuku.add(book_title); // retrieve tajuk buku masuk kedalam list buku
-                    }
-                } return false;
-            } catch (Exception e) { e.printStackTrace(); }
-
-            return true; // return true because successfully carry on the operation
-        }
-
-        protected void onPostExecute(Boolean result) {
-            super.onPostExecute(result);
-
-            if(result) {
-                // list utk buku
-                lvListBook.setAdapter(new ArrayAdapter<>(SearchBook.this, R.layout.menulist_layout, listTajukBuku)); // display list buku dalam arraylist ke ListView
-                lvListBook.setOnItemClickListener(SearchBook.this); // set onclicklistener utk setiap item dlm ListView
-            }
-
-            // dismiss progress dialog
-            if(pDialog.isShowing())
-                pDialog.dismiss();
-        }
-    }
 
     // --------------------------------------------------------------- actions for drawer -------------------------------------------------------------
     protected void onPostCreate(Bundle savedInstanceState) { // used for syncing the state of the icon on left, up most of the screen

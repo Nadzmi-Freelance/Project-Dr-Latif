@@ -8,11 +8,6 @@
     android:padding="10dp"
     tools:context="com.example.seladanghijau.projectdrlatif.RegisterComment">
 
-    <Spinner
-        android:id="@+id/commentTypeList"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"></Spinner>
-
     <EditText
         android:id="@+id/inputComment"
         android:text="Input your comment here"

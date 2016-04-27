@@ -17,11 +17,14 @@ import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.Toast;
 
+import org.apache.http.NameValuePair;
+import org.apache.http.message.BasicNameValuePair;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.net.HttpURLConnection;
 import java.util.ArrayList;
+import java.util.List;
 
 public class MainActivity extends ActionBarActivity implements AdapterView.OnItemClickListener {
     ActionBarDrawerToggle drawerListener;
@@ -71,8 +74,9 @@ public class MainActivity extends ActionBarActivity implements AdapterView.OnIte
                 i.putExtra("book_id", book_id[position]);
 
                 startActivity(i); // move to page BookDetail(create new activity based on BookDetail)
-                break;
                 // ---------------------------------------------------------------------------------------------------------
+
+                break;
             case R.id.menuList :
                 menuList.setItemChecked(position, true); // check the item that is being click to true
                 getSupportActionBar().setTitle(menus[position]); // set the title of the action bar(top bar) to the menu that has been clicked
@@ -117,7 +121,11 @@ public class MainActivity extends ActionBarActivity implements AdapterView.OnIte
         protected Boolean doInBackground(Void... params) {
             try {
                 HTTPHandler httpHandler = new HTTPHandler();
-                String responseData = httpHandler.result("http://uitmkedah.net/nadzmi/php/RetrieveBook.php");
+
+                List<NameValuePair> postData = new ArrayList<NameValuePair>();
+                postData.add(new BasicNameValuePair("inSearchType", "all"));
+
+                String responseData = httpHandler.result("http://uitmkedah.net/nadzmi/php/RetrieveBook.php", postData);
 
                 if(httpHandler.getStatus() == HttpURLConnection.HTTP_OK) { // http request "OK": successfully connect to database
                     JSONObject jObj = new JSONObject(responseData);

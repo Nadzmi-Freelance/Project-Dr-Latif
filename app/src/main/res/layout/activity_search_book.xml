@@ -20,21 +20,17 @@ tools:context="com.example.seladanghijau.projectdrlatif.SearchBook">
         android:padding="10dp"
         tools:context="com.example.seladanghijau.projectdrlatif.SearchBook">
 
-        <EditText
-            android:hint="Book title"
-            android:id="@+id/txtSearchByTitle"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
         <Button
             android:text="Search by Book Title"
             android:id="@+id/btnSearchByTitle"
             android:layout_width="match_parent"
             android:layout_height="wrap_content" />
 
-        <ListView
-            android:id="@+id/lvBookList"
+        <Button
+            android:text="Search by Book Author"
+            android:id="@+id/btnSearchByAuthor"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"></ListView>
+            android:layout_height="wrap_content" />
 
         <Button
             android:text="Search all books"
