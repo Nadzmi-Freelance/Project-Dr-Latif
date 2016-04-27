@@ -110,7 +110,7 @@ public class MainActivity extends ActionBarActivity implements AdapterView.OnIte
             // show progress dialog
             pDialog = new ProgressDialog(MainActivity.this);
             pDialog.setMessage("Please wait...");
-            pDialog.setCancelable(false);
+            pDialog.setCancelable(true);
             pDialog.show();
         }
 
@@ -128,10 +128,12 @@ public class MainActivity extends ActionBarActivity implements AdapterView.OnIte
                         JSONObject tempJSON = jArray.getJSONObject(y);
 
                         // get data from JSON(elementarily)
-                        String book_title = tempJSON.getString("book_title");
-                        book_id[y] = tempJSON.getInt("book_id");
+                        if(tempJSON.getString("message").toString().equalsIgnoreCase("success")) {
+                            String book_title = tempJSON.getString("book_title");
+                            book_id[y] = tempJSON.getInt("book_id");
 
-                        listTajukBuku.add(book_title); // retrieve tajuk buku masuk kedalam list buku
+                            listTajukBuku.add(book_title); // retrieve tajuk buku masuk kedalam list buku
+                        } else return false;
                     }
 
                     return true; // return true because successfully carry on the operation
@@ -150,7 +152,7 @@ public class MainActivity extends ActionBarActivity implements AdapterView.OnIte
                 listBuku.setAdapter(new ArrayAdapter<>(MainActivity.this, R.layout.menulist_layout, listTajukBuku)); // display list buku dalam arraylist ke ListView
                 listBuku.setOnItemClickListener(MainActivity.this); // set onclicklistener utk setiap item dlm ListView
             } else {
-                pDialog.setMessage("Database error");
+                Toast.makeText(MainActivity.this, "An error has occurred.", Toast.LENGTH_LONG);
             }
 
             // dismiss progress dialog

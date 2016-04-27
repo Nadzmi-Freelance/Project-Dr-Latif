@@ -136,7 +136,7 @@ public class RegisterPage extends ActionBarActivity implements AdapterView.OnIte
 
                     // ------------------ retrieve the requested data -------------------------------------------
                     // get the result from http post
-                    String data = httpHandler.result("http://seladanghijau.netai.net/php/register.php", postData);
+                    String data = httpHandler.result("http://uitmkedah.net/nadzmi/php/register.php", postData);
 
                     if (httpHandler.getStatus() == HttpURLConnection.HTTP_OK) {
                         // retrieve data from JSON string

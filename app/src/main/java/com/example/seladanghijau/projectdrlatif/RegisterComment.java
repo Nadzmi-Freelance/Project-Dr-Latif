@@ -2,6 +2,7 @@ package com.example.seladanghijau.projectdrlatif;
 
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -24,15 +25,13 @@ import java.util.List;
 
 public class RegisterComment extends ActionBarActivity implements View.OnClickListener {
     // elements in activity
-    Spinner commentTypeList;
-    Button sendComment;
+    Button registerComment;
     EditText inputComment;
     ProgressDialog pDialog;
 
     // other attributes
-    String[] commentTypes;
-    int commentType, userId, bookId;
-    String userType, commentDescription;
+    int inCommentType, inUserId, inBookId;
+    String inUserType, inDescription;
     public static final String USER_PREFERENCES = "user_pref";
 
     // sharedPref
@@ -44,14 +43,13 @@ public class RegisterComment extends ActionBarActivity implements View.OnClickLi
         setContentView(R.layout.activity_register_comment);
 
         // ----------------------------------- initialize all elemt in activity ----------------------------------------
-        commentTypeList = (Spinner) findViewById(R.id.commentTypeList);
-        sendComment = (Button) findViewById(R.id.sendComment);
+        registerComment = (Button) findViewById(R.id.registerComment);
         inputComment = (EditText) findViewById(R.id.inputComment);
-
-        // element dalam spinner
-        commentTypes = getResources().getStringArray(R.array.userType); // get list of userType
-        commentTypeList.setAdapter(new ArrayAdapter<String>(RegisterComment.this, android.R.layout.simple_spinner_dropdown_item, commentType));
         // -------------------------------------------------------------------------------------------------------------
+
+        // ---------------------------------- set OnClickListener ---------------------------------------
+        registerComment.setOnClickListener(this);
+        // ----------------------------------------------------------------------------------------------
 
         // ------------------------------------- initialize value for variables ---------------------------------------
         userData = getSharedPreferences(USER_PREFERENCES, Context.MODE_PRIVATE);
@@ -62,7 +60,7 @@ public class RegisterComment extends ActionBarActivity implements View.OnClickLi
     // ------------------------------------------ Click Listener -----------------------------------------------------
     public void onClick(View v) {
         switch(v.getId()) {
-            case R.id.sendComment:
+            case R.id.registerComment:
                 new SendComment().execute();
                 break;
         }
@@ -81,11 +79,11 @@ public class RegisterComment extends ActionBarActivity implements View.OnClickLi
             pDialog.show();
 
             // ----------------------------------- initilize variables -----------------------------------------
-            commentDescription = inputComment.getText().toString();
-            bookId = getIntent().getIntExtra("book_id", -1);
-            commentType = getIntent().getIntExtra("comment_type", -1);
-            userId = userData.getInt("ID", -1);
-            userType = userData.getString("USERTYPE", "");
+            inDescription = inputComment.getText().toString();
+            inBookId = getIntent().getIntExtra("book_id", -1);
+            inCommentType = getIntent().getIntExtra("comment_type", -1);
+            inUserId = userData.getInt("ID", -1);
+            inUserType = userData.getString("USERTYPE", "");
             // -------------------------------------------------------------------------------------------------
         }
 
@@ -93,19 +91,19 @@ public class RegisterComment extends ActionBarActivity implements View.OnClickLi
             try {
                 // -------------------- send http post request to request for book details data --------------------------------
                 HTTPHandler httpHandler = new HTTPHandler(); // setup HttpHandler object
-
+                // retrieve bookDetails
                 // ------------------------------ setup data for the post request ----------------------------------------------
-                List<NameValuePair> postData = new ArrayList<NameValuePair>();
-                postData.add(new BasicNameValuePair("inBookId", "" + bookId));
-                postData.add(new BasicNameValuePair("inUserType", "" + userType));
-                postData.add(new BasicNameValuePair("inCommentType", "" + commentType));
-                postData.add(new BasicNameValuePair("inUserId", "" + userId));
-                postData.add(new BasicNameValuePair("inDescription", "" + commentDescription));
+                List<NameValuePair> commentDetailsData = new ArrayList<NameValuePair>();
+                commentDetailsData.add(new BasicNameValuePair("inBookID", "" + inBookId));
+                commentDetailsData.add(new BasicNameValuePair("inUserType", "" + inUserType));
+                commentDetailsData.add(new BasicNameValuePair("inCommentType", "" + inCommentType));
+                commentDetailsData.add(new BasicNameValuePair("inUserID", "" + inUserId));
+                commentDetailsData.add(new BasicNameValuePair("inDescription", "" + inDescription));
                 // -------------------------------------------------------------------------------------------------------------
 
                 // ------------------ retrieve the requested data -------------------------------------------
                 // get the result from http post
-                String data = httpHandler.result("http://uitmkedah.net/nadzmi/php/RegisterComment.php", postData);
+                String data = httpHandler.result("http://uitmkedah.net/nadzmi/php/RegisterComment.php", commentDetailsData);
 
                 if(httpHandler.getStatus() == HttpURLConnection.HTTP_OK) {
                     // retrieve data from JSON string
@@ -136,8 +134,15 @@ public class RegisterComment extends ActionBarActivity implements View.OnClickLi
             super.onPostExecute(result);
 
             if(result) {
-                // return to previus page
+                Toast.makeText(RegisterComment.this, "Successfully commented the book", Toast.LENGTH_SHORT).show();
+
+                Intent bookDetail = new Intent(RegisterComment.this, BookDetail.class);
+                bookDetail.putExtra("book_id", inBookId);
+
+                startActivity(bookDetail);
                 finish();
+            } else {
+                Toast.makeText(RegisterComment.this, "An error has occurred", Toast.LENGTH_LONG).show();
             }
 
             // dismiss progress dialog

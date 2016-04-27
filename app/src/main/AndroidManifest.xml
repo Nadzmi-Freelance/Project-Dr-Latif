@@ -34,6 +34,15 @@
         <activity
             android:name=".LogoutPage"
             android:label="@string/title_activity_logout_page" />
+        <activity
+            android:name=".RegisterComment"
+            android:label="@string/title_activity_register_comment" />
+        <activity
+            android:name=".SearchBook"
+            android:label="@string/title_activity_search_book" />
+        <activity
+            android:name=".RetrieveComments"
+            android:label="@string/title_activity_retrieve_comments" />
         <!--
              ATTENTION: This was auto-generated to add Google Play services to your project for
              App Indexing.  See https://g.co/AppIndexing/AndroidStudio for more information.
@@ -43,11 +52,12 @@
             android:value="@integer/google_play_services_version" />
 
         <activity
-            android:name=".RegisterComment"
-            android:label="@string/title_activity_input_comment" />
+            android:name=".SearchBookTitle"
+            android:label="@string/title_activity_search_book_title" >
+        </activity>
         <activity
-            android:name=".SearchBook"
-            android:label="@string/title_activity_search_book" >
+            android:name=".SearchBookAuthor"
+            android:label="@string/title_activity_search_book_author" >
         </activity>
     </application>
 
