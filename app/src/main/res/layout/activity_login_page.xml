@@ -7,7 +7,7 @@
     android:layout_height="match_parent"
     android:padding="15dp"
     android:gravity="center_vertical"
-    tools:context="com.example.seladanghijau.projectdrlatif.LoginPageStudent">
+    tools:context="com.example.seladanghijau.projectdrlatif.LoginPage">
 
     <TextView
         android:text="Login"

@@ -54,7 +54,7 @@ public class LoginPage extends ActionBarActivity implements View.OnClickListener
 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_login_page_student);
+        setContentView(R.layout.activity_login_page);
 
         // --------------- initialize every object ------------------
         // element dlm activity
@@ -66,7 +66,7 @@ public class LoginPage extends ActionBarActivity implements View.OnClickListener
 
         // element dalam spinner
         userType = getResources().getStringArray(R.array.userType); // get list of userType
-        userTypeList.setAdapter(new ArrayAdapter<String>(LoginPage.this, android.R.layout.simple_spinner_dropdown_item, userType));
+        userTypeList.setAdapter(new ArrayAdapter<>(LoginPage.this, android.R.layout.simple_spinner_dropdown_item, userType));
         // ----------------------------------------------------------
 
         // ------------------ implement OnClickListener -------------------
@@ -141,7 +141,7 @@ public class LoginPage extends ActionBarActivity implements View.OnClickListener
                 HTTPHandler httpHandler = new HTTPHandler(); // setup HttpHandler object
 
                 // ------------------------------ setup data for the post request ----------------------------------------------
-                List<NameValuePair> postData = new ArrayList<NameValuePair>();
+                List<NameValuePair> postData = new ArrayList<>();
                 postData.add(new BasicNameValuePair("inUsername", "" + inUsername));
                 postData.add(new BasicNameValuePair("inPassword", "" + inPassword));
                 postData.add(new BasicNameValuePair("inUserType", "" + inUserType));
@@ -161,11 +161,11 @@ public class LoginPage extends ActionBarActivity implements View.OnClickListener
                     if(userJson.getInt("user_id") > 0) {
                         userDataEditor.putInt(LOGIN_STAT, LOGGEDIN);
                         userDataEditor.putInt("ID", userJson.getInt("user_id"));
-                        userDataEditor.putString("TYPE", userJson.getString("user_type"));
                         userDataEditor.putString("NAME", userJson.getString("user_name"));
                         userDataEditor.putString("USERNAME", userJson.getString("user_username"));
                         userDataEditor.putString("PASSWORD", userJson.getString("user_password"));
                         userDataEditor.putString("USERTYPE", userJson.getString("user_type"));
+                        userDataEditor.putString("TYPE", inUserType);
                         userDataEditor.commit();
 
                         return 0;

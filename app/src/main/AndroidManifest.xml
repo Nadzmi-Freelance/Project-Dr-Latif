@@ -12,7 +12,7 @@
         android:theme="@style/AppTheme" >
         <activity
             android:name=".LoginPage"
-            android:label="@string/title_activity_login_page_student" >
+            android:label="@string/title_activity_login_page" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -33,7 +33,7 @@
             android:label="@string/title_activity_register_page" />
         <activity
             android:name=".UserProfile"
-            android:label="@string/title_activity_logout_page" />
+            android:label="@string/title_activity_user_profile" />
         <activity
             android:name=".RegisterComment"
             android:label="@string/title_activity_register_comment" />

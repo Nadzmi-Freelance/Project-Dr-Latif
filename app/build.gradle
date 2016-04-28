@@ -24,6 +24,6 @@ dependencies {
     testCompile 'junit:junit:4.12'
     compile 'com.android.support:appcompat-v7:21.0.3'
     compile 'com.joanzapata.pdfview:android-pdfview:1.0.4@aar'
-    compile files('C:/Users/Seladang Hijau/Documents/GitHub/Project-Dr-Latif/gradle/wrapper/gradle-wrapper.jar')
     compile 'com.google.android.gms:play-services-appindexing:8.1.0'
+    compile files('gradle/wrapper/gradle-wrapper.jar')
 }
