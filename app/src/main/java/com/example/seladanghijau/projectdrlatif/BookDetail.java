@@ -47,6 +47,10 @@ public class BookDetail extends ActionBarActivity implements AdapterView.OnItemC
     ListView commentNeutral, commentPositive, commentNegative;
     String[] menus;
 
+    // other data
+    TabHost.TabSpec positiveTabSpec, negativeTabSpec, neutralTabSpec;
+    JSONArray jArrayPositive, jArrayNeutral, jArrayNegative;
+
     // data from other activities
     Book book;
     List<Comment> positiveCommentList, neutralCommentList, negativeCommentList;
@@ -100,9 +104,9 @@ public class BookDetail extends ActionBarActivity implements AdapterView.OnItemC
         tabHost.setup(); // setup the tabhost
 
         // declare TabSpec
-        TabHost.TabSpec positiveTabSpec = tabHost.newTabSpec("Tab One");
-        TabHost.TabSpec negativeTabSpec = tabHost.newTabSpec("Tab Two");
-        TabHost.TabSpec neutralTabSpec = tabHost.newTabSpec("Tab Three");
+        positiveTabSpec = tabHost.newTabSpec("Tab One");
+        negativeTabSpec = tabHost.newTabSpec("Tab Two");
+        neutralTabSpec = tabHost.newTabSpec("Tab Three");
 
         // set content for TabSpec
         positiveTabSpec.setContent(R.id.positiveTab);
@@ -124,6 +128,113 @@ public class BookDetail extends ActionBarActivity implements AdapterView.OnItemC
         book.setId(getIntent().getIntExtra("book_id", -1)); // get bundled data from previous activity
         new getBookDetails().execute();
         new RetrieveComment().execute();
+    }
+
+    // ------------------------------------ OnClick Events ------------------------------------
+    public void onClick(View v) { // onClickListener
+        switch (v.getId()) {
+            case R.id.viewPDF:
+                Intent pdfViewer = new Intent(this, PDFViewer.class);
+
+                pdfViewer.putExtra("pdf_id", book.getPdfID());
+
+                startActivity(pdfViewer);
+                break;
+            case R.id.viewPositiveComment:
+                Intent viewPositiveComment = new Intent(this, RetrieveComments.class);
+
+                viewPositiveComment.putExtra("book_id", book.getId());
+                viewPositiveComment.putExtra("comment_type", "positive_comments");
+
+                startActivity(viewPositiveComment);
+                break;
+            case R.id.viewNeutralComment:
+                Intent viewNeutralComment = new Intent(this, RetrieveComments.class);
+
+                viewNeutralComment.putExtra("book_id", book.getId());
+                viewNeutralComment.putExtra("comment_type", "neutral_comments");
+
+                startActivity(viewNeutralComment);
+                break;
+            case R.id.viewNegativeComment:
+                Intent viewNegativeComment = new Intent(this, RetrieveComments.class);
+
+                viewNegativeComment.putExtra("book_id", book.getId());
+                viewNegativeComment.putExtra("comment_type", "negative_comments");
+
+                startActivity(viewNegativeComment);
+                break;
+            case R.id.btnRegCommentPositive:
+                Intent regPosComment = new Intent(this, RegisterComment.class);
+                regPosComment.putExtra("comment_type", 1);
+                regPosComment.putExtra("book_id", book.getId());
+
+                startActivity(regPosComment);
+                break;
+            case R.id.btnRegCommentNeutral:
+                Intent regNeuComment = new Intent(this, RegisterComment.class);
+                regNeuComment.putExtra("comment_type", 3);
+                regNeuComment.putExtra("book_id", book.getId());
+
+                startActivity(regNeuComment);
+                break;
+            case R.id.btnRegCommentNegative:
+                Intent regNegComment = new Intent(this, RegisterComment.class);
+                regNegComment.putExtra("comment_type", 2);
+                regNegComment.putExtra("book_id", book.getId());
+
+                startActivity(regNegComment);
+                break;
+        }
+    }
+
+    public void onItemClick(AdapterView<?> parent, View view, int position, long id) { // onItemClickListener
+        switch (parent.getId()) {
+            case R.id.menuList:
+                menuList.setItemChecked(position, true);
+                getSupportActionBar().setTitle(menus[position]);
+
+                drawerLayout.closeDrawers();
+                break;
+            default:
+                Toast.makeText(this, "Error", Toast.LENGTH_LONG).show();
+                break;
+        }
+    }
+    // -----------------------------------------------------------------------------------
+
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        switch (keyCode) {
+            case KeyEvent.KEYCODE_BACK: // destroy this activity if user clicked back button
+                finish();
+                break;
+        }
+
+        return super.onKeyDown(keyCode, event);
+    }
+
+    // -------------------------------------- actions for drawer -------------------------------------------------
+    protected void onPostCreate(Bundle savedInstanceState) { // used for syncing the state of the icon on left, up most of the screen
+        super.onPostCreate(savedInstanceState);
+
+        drawerListener.syncState(); // syncing the state of the icon on left, up most of the screen
+    }
+
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        getMenuInflater().inflate(R.menu.menu_main, menu);
+        return true;
+    }
+    // ----------------------------------------------------------------------------------------
+
+    public boolean onOptionsItemSelected(MenuItem item) { // handle action bar item click(top bar)
+        return super.onOptionsItemSelected(item);
+    }
+
+    public void onConfigurationChanged(Configuration newConfig) { // detect when the configuration(landscape or portrait) of the screen change
+        super.onConfigurationChanged(newConfig);
+
+        drawerListener.onConfigurationChanged(newConfig); // change to new configuration
     }
 
     // ----------------------------- private class AsyncTask -----------------------------
@@ -231,9 +342,9 @@ public class BookDetail extends ActionBarActivity implements AdapterView.OnItemC
                 if(httpHandler2.getStatus() == HttpURLConnection.HTTP_OK) {
                     // retrieve data from JSON string
                     JSONObject jObj = new JSONObject(commentData);
-                    JSONArray jArrayPositive = jObj.getJSONArray("positive_comments");
-                    JSONArray jArrayNeutral = jObj.getJSONArray("neutral_comments");
-                    JSONArray jArrayNegative = jObj.getJSONArray("negative_comments");
+                    jArrayPositive = jObj.getJSONArray("positive_comments");
+                    jArrayNeutral = jObj.getJSONArray("neutral_comments");
+                    jArrayNegative = jObj.getJSONArray("negative_comments");
 
                     for(int x=0 ; x<jArrayPositive.length() ; x++) {
                         JSONObject jsonObject = jArrayPositive.getJSONObject(x);
@@ -294,6 +405,10 @@ public class BookDetail extends ActionBarActivity implements AdapterView.OnItemC
 
             if(result) {
                 // --------------------------- setAdapter for listviews ---------------------------------
+                positiveTabSpec.setIndicator("Positive (" + jArrayPositive.length() + ")");
+                neutralTabSpec.setIndicator("Neutral (" + jArrayNeutral.length() + ")");
+                negativeTabSpec.setIndicator("Negative (" + jArrayNegative.length() + ")");
+
                 commentPositive.setAdapter(new CommentAdapter(BookDetail.this, positiveCommentList));
                 commentNeutral.setAdapter(new CommentAdapter(BookDetail.this, neutralCommentList));
                 commentNegative.setAdapter(new CommentAdapter(BookDetail.this, negativeCommentList));
@@ -304,112 +419,6 @@ public class BookDetail extends ActionBarActivity implements AdapterView.OnItemC
             if(pDialog.isShowing())
                 pDialog.dismiss();
         }
-    }    // -----------------------------------------------------------------------------------
-
-    // ------------------------------------ OnClick Events ------------------------------------
-    public void onClick(View v) { // onClickListener
-        switch (v.getId()) {
-            case R.id.viewPDF:
-                Intent pdfViewer = new Intent(this, PDFViewer.class);
-
-                pdfViewer.putExtra("pdf_id", book.getPdfID());
-
-                startActivity(pdfViewer);
-                break;
-            case R.id.viewPositiveComment:
-                Intent viewPositiveComment = new Intent(this, RetrieveComments.class);
-
-                viewPositiveComment.putExtra("book_id", book.getId());
-                viewPositiveComment.putExtra("comment_type", "positive_comments");
-
-                startActivity(viewPositiveComment);
-                break;
-            case R.id.viewNeutralComment:
-                Intent viewNeutralComment = new Intent(this, RetrieveComments.class);
-
-                viewNeutralComment.putExtra("book_id", book.getId());
-                viewNeutralComment.putExtra("comment_type", "neutral_comments");
-
-                startActivity(viewNeutralComment);
-                break;
-            case R.id.viewNegativeComment:
-                Intent viewNegativeComment = new Intent(this, RetrieveComments.class);
-
-                viewNegativeComment.putExtra("book_id", book.getId());
-                viewNegativeComment.putExtra("comment_type", "negative_comments");
-
-                startActivity(viewNegativeComment);
-                break;
-            case R.id.btnRegCommentPositive:
-                Intent regPosComment = new Intent(this, RegisterComment.class);
-                regPosComment.putExtra("comment_type", 1);
-                regPosComment.putExtra("book_id", book.getId());
-
-                startActivity(regPosComment);
-                break;
-            case R.id.btnRegCommentNeutral:
-                Intent regNeuComment = new Intent(this, RegisterComment.class);
-                regNeuComment.putExtra("comment_type", 3);
-                regNeuComment.putExtra("book_id", book.getId());
-
-                startActivity(regNeuComment);
-                break;
-            case R.id.btnRegCommentNegative:
-                Intent regNegComment = new Intent(this, RegisterComment.class);
-                regNegComment.putExtra("comment_type", 2);
-                regNegComment.putExtra("book_id", book.getId());
-
-                startActivity(regNegComment);
-                break;
-        }
-    }
-
-    public void onItemClick(AdapterView<?> parent, View view, int position, long id) { // onItemClickListener
-        switch (parent.getId()) {
-            case R.id.menuList :
-                menuList.setItemChecked(position, true);
-                getSupportActionBar().setTitle(menus[position]);
-
-                drawerLayout.closeDrawers();
-                break;
-            default :
-                Toast.makeText(this, "Error", Toast.LENGTH_LONG).show();
-                break;
-        }
-    }
-
-    public boolean onKeyDown(int keyCode, KeyEvent event) {
-        switch (keyCode) {
-            case KeyEvent.KEYCODE_BACK: // destroy this activity if user clicked back button
-                finish();
-                break;
-        }
-
-        return super.onKeyDown(keyCode, event);
-    }
-    // ----------------------------------------------------------------------------------------
-
-    // -------------------------------------- actions for drawer -------------------------------------------------
-    protected void onPostCreate(Bundle savedInstanceState) { // used for syncing the state of the icon on left, up most of the screen
-        super.onPostCreate(savedInstanceState);
-
-        drawerListener.syncState(); // syncing the state of the icon on left, up most of the screen
-    }
-
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_main, menu);
-        return true;
-    }
-
-    public boolean onOptionsItemSelected(MenuItem item) { // handle action bar item click(top bar)
-        return super.onOptionsItemSelected(item);
-    }
-
-    public void onConfigurationChanged(Configuration newConfig) { // detect when the configuration(landscape or portrait) of the screen change
-        super.onConfigurationChanged(newConfig);
-
-        drawerListener.onConfigurationChanged(newConfig); // change to new configuration
     }
     // ------------------------------------------------------------------------------------------------------------
 
@@ -435,18 +444,36 @@ public class BookDetail extends ActionBarActivity implements AdapterView.OnItemC
             this.title = title;
         }
 
+        public int getId() {
+            return id;
+        }
+
         // getter and setter
         public void setId(int id) { this.id = id; }
-        public void setPdfID(int pdfID) { this.pdfID = pdfID; }
-        public void setAccessionno(String accessionno) { this.accessionno = accessionno;}
-        public void setAuthor(String author) { this.author = author; }
-        public void setTitle(String title) { this.title = title; }
 
-        public int getId() { return id; }
         public int getPdfID() { return pdfID; }
+
+        public void setPdfID(int pdfID) {
+            this.pdfID = pdfID;
+        }
+
         public String getAccessionno() { return accessionno; }
+
+        public void setAccessionno(String accessionno) {
+            this.accessionno = accessionno;
+        }
+
         public String getAuthor() { return author; }
+
+        public void setAuthor(String author) {
+            this.author = author;
+        }
+
         public String getTitle() { return title; }
+
+        public void setTitle(String title) {
+            this.title = title;
+        }
     }
 
     class Comment {
@@ -457,11 +484,17 @@ public class BookDetail extends ActionBarActivity implements AdapterView.OnItemC
             this.usercomment = usercomment;
         }
 
-        public void setUsername(String username) { this.username = username; }
-        public void setUsercomment(String usercomment) { this.usercomment = usercomment; }
+        public String getUsername() {
+            return username;
+        }
 
-        public String getUsername() { return username; }
+        public void setUsername(String username) { this.username = username; }
+
         public String getUsercomment() { return usercomment; }
+
+        public void setUsercomment(String usercomment) {
+            this.usercomment = usercomment;
+        }
     }
 
     class CommentHolder {
@@ -511,4 +544,3 @@ public class BookDetail extends ActionBarActivity implements AdapterView.OnItemC
     }
     // -----------------------------------------------------------------------------------
 }
-

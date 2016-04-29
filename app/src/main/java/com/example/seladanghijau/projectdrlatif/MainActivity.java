@@ -27,17 +27,18 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class MainActivity extends ActionBarActivity implements AdapterView.OnItemClickListener {
+    // elements in activity
     ActionBarDrawerToggle drawerListener;
+    ProgressDialog pDialog;
     DrawerLayout drawerLayout;
     ListView menuList, listBuku;
     String[] menus;
 
+    // other variables
     ArrayList<String> listTajukBuku;
 
     // book's details data
     int[] book_id;
-
-    static ProgressDialog pDialog;
 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -107,6 +108,33 @@ public class MainActivity extends ActionBarActivity implements AdapterView.OnIte
     }
     // -------------------------------------------------------------------------------------------------------------------------------------
 
+    // --------------------------------------------------------------- actions for drawer -------------------------------------------------------------
+    protected void onPostCreate(Bundle savedInstanceState) { // used for syncing the state of the icon on left, up most of the screen
+        super.onPostCreate(savedInstanceState);
+
+        drawerListener.syncState(); // syncing the state of the icon on left, up most of the screen
+    }
+
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        getMenuInflater().inflate(R.menu.menu_main, menu);
+        return true;
+    }
+
+    public boolean onOptionsItemSelected(MenuItem item) { // handle action bar item click(top bar)
+        if (drawerListener.onOptionsItemSelected(item)) {
+            return true;
+        }
+
+        return super.onOptionsItemSelected(item);
+    }
+
+    public void onConfigurationChanged(Configuration newConfig) { // detect when the configuration(landscape or portrait) of the screen change
+        super.onConfigurationChanged(newConfig);
+
+        drawerListener.onConfigurationChanged(newConfig); // change to new configuration
+    }
+
     private class LoadBookList extends AsyncTask<Void, Void, Boolean> {
         protected void onPreExecute() {
             super.onPreExecute();
@@ -167,33 +195,6 @@ public class MainActivity extends ActionBarActivity implements AdapterView.OnIte
             if(pDialog.isShowing())
                 pDialog.dismiss();
         }
-    }
-
-    // --------------------------------------------------------------- actions for drawer -------------------------------------------------------------
-    protected void onPostCreate(Bundle savedInstanceState) { // used for syncing the state of the icon on left, up most of the screen
-        super.onPostCreate(savedInstanceState);
-
-        drawerListener.syncState(); // syncing the state of the icon on left, up most of the screen
-    }
-
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_main, menu);
-        return true;
-    }
-
-    public boolean onOptionsItemSelected(MenuItem item) { // handle action bar item click(top bar)
-        if(drawerListener.onOptionsItemSelected(item)) {
-            return true;
-        }
-
-        return super.onOptionsItemSelected(item);
-    }
-
-    public void onConfigurationChanged(Configuration newConfig) { // detect when the configuration(landscape or portrait) of the screen change
-        super.onConfigurationChanged(newConfig);
-
-        drawerListener.onConfigurationChanged(newConfig); // change to new configuration
     }
     // ---------------------------------------------------------------------------------------------------------------------------------------------------
 }

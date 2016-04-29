@@ -33,4 +33,5 @@
     <string name="title_activity_retrieve_comments">RetrieveComments</string>
     <string name="title_activity_search_book_title">SearchBookTitle</string>
     <string name="title_activity_search_book_author">SearchBookAuthor</string>
+    <string name="title_activity_analysis">Analysis</string>
 </resources>

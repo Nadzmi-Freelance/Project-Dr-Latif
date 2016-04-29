@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.example.seladanghijau.projectdrlatif" >
+    package="com.example.seladanghijau.projectdrlatif">
 
     <uses-permission android:name="android.permission.INTERNET" />
 
@@ -9,10 +9,10 @@
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:supportsRtl="true"
-        android:theme="@style/AppTheme" >
+        android:theme="@style/AppTheme">
         <activity
             android:name=".LoginPage"
-            android:label="@string/title_activity_login_page" >
+            android:label="@string/title_activity_login_page">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -53,12 +53,13 @@
 
         <activity
             android:name=".SearchBookTitle"
-            android:label="@string/title_activity_search_book_title" >
-        </activity>
+            android:label="@string/title_activity_search_book_title"></activity>
         <activity
             android:name=".SearchBookAuthor"
-            android:label="@string/title_activity_search_book_author" >
-        </activity>
+            android:label="@string/title_activity_search_book_author"></activity>
+        <activity
+            android:name=".Analysis"
+            android:label="@string/title_activity_analysis"></activity>
     </application>
 
 </manifest>

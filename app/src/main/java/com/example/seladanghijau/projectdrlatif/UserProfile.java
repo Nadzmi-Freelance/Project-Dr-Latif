@@ -76,10 +76,7 @@ public class UserProfile extends ActionBarActivity implements AdapterView.OnItem
         // ------------------------- setup sharedpreference ----------------------------------
         userData = getSharedPreferences(LoginPage.USER_PREFERENCES, MODE_PRIVATE);
         userDataEditor = userData.edit();
-
-        user = new User();
-        user.setId(userData.getInt("ID", -1));
-        user.setType(userData.getString("TYPE", "student"));
+        userDataEditor.apply();
         // -----------------------------------------------------------------------------------
 
         // ---------------------- Setup OnClickListener in activity -----------------------------
@@ -92,6 +89,25 @@ public class UserProfile extends ActionBarActivity implements AdapterView.OnItem
 
         menuList.setOnItemClickListener(this); // register click listener for each of the menus of the menu drawer
         // --------------------------------------------------------------------------------------------
+
+        // -------------- drawer actions --------------------
+        menus = getResources().getStringArray(R.array.menuMain);
+        drawerListener = new ActionBarDrawerToggle(this, drawerLayout, 0, 0);
+        drawerLayout.setDrawerListener(drawerListener);
+
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
+        // list utk drawer
+        menuList.setAdapter(new ArrayAdapter<>(this, R.layout.menulist_layout, menus));
+        menuList.setOnItemClickListener(this);
+        // -------------------------------------------------
+
+        // setup variables
+        user = new User();
+        user.setId(userData.getInt("ID", -1));
+        user.setType(userData.getString("USERTYPE", "student"));
+
+        new GetProfile().execute();
     }
 
     // --------------------------- OnClickListener & OnItemClickListener -----------------------------------------
@@ -115,6 +131,31 @@ public class UserProfile extends ActionBarActivity implements AdapterView.OnItem
     }
     // -----------------------------------------------------------------------------------------------------------
 
+    // ------------------------------------------ actions for drawer ----------------------------------------------
+    protected void onPostCreate(Bundle savedInstanceState) { // used for syncing the state of the icon on left, up most of the screen
+        super.onPostCreate(savedInstanceState);
+
+        drawerListener.syncState(); // syncing the state of the icon on left, up most of the screen
+    }
+    // ------------------------------------------------------------------------------------------------------------
+
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        getMenuInflater().inflate(R.menu.menu_main, menu);
+        return true;
+    }
+    // -------------------------------------------------------------------------------------------------------------
+
+    public boolean onOptionsItemSelected(MenuItem item) { // handle action bar item click(top bar)
+        return drawerListener.onOptionsItemSelected(item);
+    }
+
+    public void onConfigurationChanged(Configuration newConfig) { // detect when the configuration(landscape or portrait) of the screen change
+        super.onConfigurationChanged(newConfig);
+
+        drawerListener.onConfigurationChanged(newConfig); // change to new configuration
+    }
+
     // ------------------------------------- AsyncTask private class ----------------------------------------------
     private class GetProfile extends AsyncTask<Void, Void, Integer> {
         protected void onPreExecute() {
@@ -131,19 +172,19 @@ public class UserProfile extends ActionBarActivity implements AdapterView.OnItem
             try {
                 HTTPHandler httpHandler = new HTTPHandler();
 
-                List<NameValuePair> postData = new ArrayList<NameValuePair>();
+                List<NameValuePair> postData = new ArrayList<>();
                 postData.add(new BasicNameValuePair("inUserId", "" + user.getId()));
                 postData.add(new BasicNameValuePair("inUserType", user.getType()));
 
                 String responseData = httpHandler.result("http://uitmkedah.net/nadzmi/php/UserProfile.php", postData);
 
-                if(httpHandler.getStatus() == HttpURLConnection.HTTP_OK) { // http request "OK": successfully connect to database
+                if (httpHandler.getStatus() == HttpURLConnection.HTTP_OK) { // http request "OK": successfully connect to database
                     JSONObject jObj = new JSONObject(responseData);
                     JSONArray jArray = jObj.getJSONArray("user_profile");
 
                     JSONObject tempJSON = jArray.getJSONObject(0);
                     // get data from JSON(elementarily)
-                    if(tempJSON.getString("message").toString().equalsIgnoreCase("success")) {
+                    if (tempJSON.getString("message").equalsIgnoreCase("success")) {
                         user.setName(tempJSON.getString("user_name"));
                         user.setAddress(tempJSON.getString("user_address"));
                         user.setEmail(tempJSON.getString("user_email"));
@@ -154,15 +195,17 @@ public class UserProfile extends ActionBarActivity implements AdapterView.OnItem
                         user.setPassword(tempJSON.getString("user_password"));
 
                         return 1;
-                    } else if(tempJSON.getString("message").toString().equalsIgnoreCase("error_norecord")) {
+                    } else if (tempJSON.getString("message").equalsIgnoreCase("error_norecord")) {
                         return 2;
-                    } else if(tempJSON.getString("message").toString().equalsIgnoreCase("error_server")) {
+                    } else if (tempJSON.getString("message").equalsIgnoreCase("error_server")) {
                         return 3;
-                    } else if(tempJSON.getString("message").toString().equalsIgnoreCase("error")) {
-
+                    } else if (tempJSON.getString("message").equalsIgnoreCase("error")) {
+                        return 4;
                     } else return 4;
                 }
-            } catch (Exception e) { e.printStackTrace(); }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
 
             return 4;
         }
@@ -170,33 +213,32 @@ public class UserProfile extends ActionBarActivity implements AdapterView.OnItem
         protected void onPostExecute(Integer result) {
             super.onPostExecute(result);
 
-            switch(result) {
+            switch (result) {
                 case 1: // success
-                    txtUsername.setText(user.getUsername());
-                    txtName.setText(user.getName());
-                    txtPosition.setText(user.getPosition());
-                    txtDepartment.setText(user.getDepartment());
-                    txtEmail.setText(user.getEmail());
-                    txtPhoneNo.setText(user.getPhoneno());
-                    txtAddress.setText(user.getAddress());
+                    txtUsername.setText("Username: " + user.getUsername());
+                    txtName.setText("Name: " + user.getName());
+                    txtPosition.setText("Position: " + user.getPosition());
+                    txtDepartment.setText("Department: " + user.getDepartment());
+                    txtEmail.setText("E-Mail: " + user.getEmail());
+                    txtPhoneNo.setText("Phone No.: " + user.getPhoneno());
+                    txtAddress.setText("Address: " + user.getAddress());
                     break;
                 case 2: // no record found
-                    Toast.makeText(UserProfile.this, "Your record does not exist in the database. Please login again.", Toast.LENGTH_LONG);
+                    Toast.makeText(UserProfile.this, "Your record does not exist in the database. Please login again.", Toast.LENGTH_LONG).show();
                     break;
                 case 3: // error in server
-                    Toast.makeText(UserProfile.this, "An error has occurred in the server. Plase contact your administrator.", Toast.LENGTH_LONG);
+                    Toast.makeText(UserProfile.this, "An error has occurred in the server. Plase contact your administrator.", Toast.LENGTH_LONG).show();
                     break;
                 case 4: // other error
-                    Toast.makeText(UserProfile.this, "An error has occurred.", Toast.LENGTH_LONG);
+                    Toast.makeText(UserProfile.this, "An error has occurred.", Toast.LENGTH_LONG).show();
                     break;
             }
 
             // dismiss progress dialog
-            if(pDialog.isShowing())
+            if (pDialog.isShowing())
                 pDialog.dismiss();
         }
     }
-    // ------------------------------------------------------------------------------------------------------------
 
     // -------------------------------------------- other classes --------------------------------------------------
     class User {
@@ -230,56 +272,86 @@ public class UserProfile extends ActionBarActivity implements AdapterView.OnItem
             this.password = password;
         }
 
-        // setter and getter
-        public void setType(String type) { this.type = type; }
-        public void setId(int id) { this.id = id; }
-        public void setName(String name) { this.name = name; }
-        public void setAddress(String address) { this.address = address; }
-        public void setEmail(String email) { this.email = email; }
-        public void setPhoneno(String phoneno) { this.phoneno = phoneno; }
-        public void setPosition(String position) { this.position = position; }
-        public void setDepartment(String department) { this.department = department; }
-        public void setUsername(String username) { this.username = username; }
-        public void setPassword(String password) { this.password = password; }
-
-        public String getType() { return type; }
-        public String getPassword() { return password; }
-        public int getId() { return id; }
-        public String getName() { return name; }
-        public String getAddress() { return address; }
-        public String getEmail() { return email; }
-        public String getPhoneno() { return phoneno; }
-        public String getPosition() { return position; }
-        public String getDepartment() { return department; }
-        public String getUsername() { return username; }
-    }
-    // -------------------------------------------------------------------------------------------------------------
-
-    // --------------------------------------------------------------- actions for drawer -------------------------------------------------------------
-    protected void onPostCreate(Bundle savedInstanceState) { // used for syncing the state of the icon on left, up most of the screen
-        super.onPostCreate(savedInstanceState);
-
-        drawerListener.syncState(); // syncing the state of the icon on left, up most of the screen
-    }
-
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_main, menu);
-        return true;
-    }
-
-    public boolean onOptionsItemSelected(MenuItem item) { // handle action bar item click(top bar)
-        if(drawerListener.onOptionsItemSelected(item)) {
-            return true;
+        public String getType() {
+            return type;
         }
 
-        return super.onOptionsItemSelected(item);
-    }
+        // setter and getter
+        public void setType(String type) {
+            this.type = type;
+        }
 
-    public void onConfigurationChanged(Configuration newConfig) { // detect when the configuration(landscape or portrait) of the screen change
-        super.onConfigurationChanged(newConfig);
+        public String getPassword() {
+            return password;
+        }
 
-        drawerListener.onConfigurationChanged(newConfig); // change to new configuration
+        public void setPassword(String password) {
+            this.password = password;
+        }
+
+        public int getId() {
+            return id;
+        }
+
+        public void setId(int id) {
+            this.id = id;
+        }
+
+        public String getName() {
+            return name;
+        }
+
+        public void setName(String name) {
+            this.name = name;
+        }
+
+        public String getAddress() {
+            return address;
+        }
+
+        public void setAddress(String address) {
+            this.address = address;
+        }
+
+        public String getEmail() {
+            return email;
+        }
+
+        public void setEmail(String email) {
+            this.email = email;
+        }
+
+        public String getPhoneno() {
+            return phoneno;
+        }
+
+        public void setPhoneno(String phoneno) {
+            this.phoneno = phoneno;
+        }
+
+        public String getPosition() {
+            return position;
+        }
+
+        public void setPosition(String position) {
+            this.position = position;
+        }
+
+        public String getDepartment() {
+            return department;
+        }
+
+        public void setDepartment(String department) {
+            this.department = department;
+        }
+
+        public String getUsername() {
+            return username;
+        }
+
+        public void setUsername(String username) {
+            this.username = username;
+        }
     }
-    // ---------------------------------------------------------------------------------------------------------------------------------------------------
+    // -------------------------------------------------------------------------------------------------------------
 }

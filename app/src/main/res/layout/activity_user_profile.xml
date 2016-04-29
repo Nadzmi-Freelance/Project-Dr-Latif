@@ -11,124 +11,112 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <RelativeLayout
+
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:padding="10dp">
+            android:layout_gravity="center"
+            android:orientation="vertical">
 
-
-            <Button
-                android:id="@+id/logout"
-                android:text="LOGOUT"
+            <ScrollView
+                android:id="@+id/scrollView2"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:textColor="#ffffff"
-                android:background="#cc0000"
-                android:layout_alignParentBottom="true"
-                android:layout_alignParentLeft="true"
-                android:layout_alignParentStart="true" />
+                android:layout_height="match_parent"
+                android:layout_gravity="center_horizontal">
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textAppearance="?android:attr/textAppearanceLarge"
-                android:text="Profile"
-                android:id="@+id/textView"
-                android:layout_alignParentTop="true"
-                android:layout_alignParentLeft="true"
-                android:layout_alignParentStart="true"
-                android:layout_alignParentRight="true"
-                android:layout_alignParentEnd="true"
-                android:gravity="center" />
-
-            <ImageView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:id="@+id/imgThumbnail"
-                android:layout_below="@+id/textView"
-                android:layout_alignParentLeft="true"
-                android:layout_alignParentStart="true"
-                android:maxHeight="150dp"
-                android:maxWidth="150dp"
-                android:minHeight="150dp"
-                android:minWidth="150dp" />
-
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:textAppearance="?android:attr/textAppearanceMedium"
-                android:text="Username"
-                android:id="@+id/txtUsername"
-                android:layout_below="@+id/textView"
-                android:layout_toRightOf="@+id/imgThumbnail"
-                android:layout_toEndOf="@+id/imgThumbnail"
-                android:textSize="25dp" />
-
-            <LinearLayout
-                android:orientation="vertical"
-                android:layout_width="fill_parent"
-                android:layout_height="fill_parent"
-                android:layout_below="@+id/imgThumbnail"
-                android:layout_alignParentLeft="true"
-                android:layout_alignParentStart="true"
-                android:layout_above="@+id/logout">
-
-                <TextView
+                <LinearLayout
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:textAppearance="?android:attr/textAppearanceMedium"
-                    android:text="Name"
-                    android:id="@+id/txtName"
-                    android:textSize="25dp"
-                    android:layout_marginTop="10dp" />
+                    android:layout_height="match_parent"
+                    android:orientation="vertical"
+                    android:padding="10dp">
 
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:textAppearance="?android:attr/textAppearanceMedium"
-                    android:text="Position"
-                    android:id="@+id/txtPosition"
-                    android:textSize="25dp"
-                    android:layout_marginTop="10dp" />
+                    <TextView
+                        android:id="@+id/textView"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="center"
+                        android:text="Profile"
+                        android:textAppearance="?android:attr/textAppearanceLarge" />
 
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:textAppearance="?android:attr/textAppearanceMedium"
-                    android:text="Department"
-                    android:id="@+id/txtDepartment"
-                    android:textSize="25dp"
-                    android:layout_marginTop="10dp" />
+                    <TextView
+                        android:id="@+id/txtUsername"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_below="@+id/textView"
+                        android:text="Username"
+                        android:textAppearance="?android:attr/textAppearanceMedium"
+                        android:textSize="25sp" />
 
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:textAppearance="?android:attr/textAppearanceMedium"
-                    android:text="E-Mail"
-                    android:id="@+id/txtEmail"
-                    android:textSize="25dp"
-                    android:layout_marginTop="10dp" />
+                    <TextView
+                        android:id="@+id/txtName"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_below="@+id/txtUsername"
+                        android:layout_marginTop="10dp"
+                        android:text="Name"
+                        android:textAppearance="?android:attr/textAppearanceMedium"
+                        android:textSize="25sp" />
 
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:textAppearance="?android:attr/textAppearanceMedium"
-                    android:text="Phone No."
-                    android:id="@+id/txtPhoneNo"
-                    android:textSize="25dp"
-                    android:layout_marginTop="10dp" />
+                    <TextView
+                        android:id="@+id/txtPosition"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_below="@+id/txtName"
+                        android:layout_marginTop="10dp"
+                        android:text="Position"
+                        android:textAppearance="?android:attr/textAppearanceMedium"
+                        android:textSize="25sp" />
 
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:textAppearance="?android:attr/textAppearanceMedium"
-                    android:text="Address"
-                    android:id="@+id/txtAddress"
-                    android:textSize="25dp"
-                    android:layout_marginTop="10dp" />
-            </LinearLayout>
+                    <TextView
+                        android:id="@+id/txtDepartment"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_below="@+id/txtPosition"
+                        android:layout_marginTop="10dp"
+                        android:text="Department"
+                        android:textAppearance="?android:attr/textAppearanceMedium"
+                        android:textSize="25sp" />
 
-        </RelativeLayout>
+                    <TextView
+                        android:id="@+id/txtEmail"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_below="@+id/txtDepartment"
+                        android:layout_marginTop="10dp"
+                        android:text="E-Mail"
+                        android:textAppearance="?android:attr/textAppearanceMedium"
+                        android:textSize="25sp" />
+
+                    <TextView
+                        android:id="@+id/txtPhoneNo"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_below="@+id/txtEmail"
+                        android:layout_marginTop="10dp"
+                        android:text="Phone No."
+                        android:textAppearance="?android:attr/textAppearanceMedium"
+                        android:textSize="25sp" />
+
+                    <TextView
+                        android:id="@+id/txtAddress"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_below="@+id/txtPhoneNo"
+                        android:layout_marginTop="10dp"
+                        android:text="Address"
+                        android:textAppearance="?android:attr/textAppearanceMedium"
+                        android:textSize="25sp" />
+
+                    <Button
+                        android:id="@+id/logout"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:background="#cc0000"
+                        android:text="LOGOUT"
+                        android:textColor="#ffffff" />
+                </LinearLayout>
+            </ScrollView>
+        </LinearLayout>
     </FrameLayout>
     <!---->
 

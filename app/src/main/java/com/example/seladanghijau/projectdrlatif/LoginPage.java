@@ -4,20 +4,14 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.content.res.Configuration;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarActivity;
-import android.support.v7.app.ActionBarDrawerToggle;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ListView;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -26,13 +20,16 @@ import org.apache.http.NameValuePair;
 import org.apache.http.message.BasicNameValuePair;
 import org.json.JSONArray;
 import org.json.JSONObject;
-import org.w3c.dom.Text;
 
 import java.net.HttpURLConnection;
 import java.util.ArrayList;
 import java.util.List;
 
 public class LoginPage extends ActionBarActivity implements View.OnClickListener, AdapterView.OnItemClickListener {
+    public static final String USER_PREFERENCES = "user_pref";
+    public static final String LOGIN_STAT = "LOGIN_STAT";
+    public static final int LOGGEDIN = 1;
+    public static final int NOTLOGGEDIN = 0;
     // element dlm activity ni
     ProgressDialog pDialog;
     TextView register;
@@ -40,15 +37,9 @@ public class LoginPage extends ActionBarActivity implements View.OnClickListener
     Button login;
     Spinner userTypeList;
     String[] userType;
-
     // shared preferences
     SharedPreferences userData;
     SharedPreferences.Editor userDataEditor;
-    public static final String USER_PREFERENCES = "user_pref";
-    public static final String LOGIN_STAT = "LOGIN_STAT";
-    public static final int LOGGEDIN = 1;
-    public static final int NOTLOGGEDIN = 0;
-
     // other attributes
     String inUsername, inPassword, inUserType;
 
@@ -165,7 +156,6 @@ public class LoginPage extends ActionBarActivity implements View.OnClickListener
                         userDataEditor.putString("USERNAME", userJson.getString("user_username"));
                         userDataEditor.putString("PASSWORD", userJson.getString("user_password"));
                         userDataEditor.putString("USERTYPE", userJson.getString("user_type"));
-                        userDataEditor.putString("TYPE", inUserType);
                         userDataEditor.commit();
 
                         return 0;
