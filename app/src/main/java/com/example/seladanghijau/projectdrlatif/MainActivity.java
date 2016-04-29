@@ -87,6 +87,10 @@ public class MainActivity extends ActionBarActivity implements AdapterView.OnIte
                         Intent logoutPage = new Intent(MainActivity.this, UserProfile.class);
                         startActivity(logoutPage);
                         break;
+                    case 3:
+                        Intent analysis = new Intent(MainActivity.this, Analysis.class);
+                        startActivity(analysis);
+                        break;
                 }
 
                 drawerLayout.closeDrawers(); // close the drawer when an item has been clicked

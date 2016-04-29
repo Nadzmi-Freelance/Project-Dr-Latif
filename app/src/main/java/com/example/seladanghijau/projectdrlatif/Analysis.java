@@ -1,6 +1,7 @@
 package com.example.seladanghijau.projectdrlatif;
 
 import android.app.ProgressDialog;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarActivity;
@@ -11,6 +12,7 @@ import android.widget.ArrayAdapter;
 import android.widget.ExpandableListView;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 public class Analysis extends ActionBarActivity implements AdapterView.OnItemClickListener, View.OnClickListener {
     // items in activity
@@ -32,6 +34,7 @@ public class Analysis extends ActionBarActivity implements AdapterView.OnItemCli
         setContentView(R.layout.activity_analysis);
 
         // -------------------------------- initialize items in activity ------------------------------
+        drawerLayout = (DrawerLayout) findViewById(R.id.drawerLayout);
         txtTotalUser = (TextView) findViewById(R.id.txtTotalUser);
         txtTotalStudent = (TextView) findViewById(R.id.txtTotalStudent);
         txtTotalStaff = (TextView) findViewById(R.id.txtTotalStaff);
@@ -47,6 +50,7 @@ public class Analysis extends ActionBarActivity implements AdapterView.OnItemCli
 
         // -------------- drawer actions --------------------
         menus = getResources().getStringArray(R.array.menuAdmin);
+        menuList = (ListView) findViewById(R.id.menuList);
         drawerListener = new ActionBarDrawerToggle(this, drawerLayout, 0, 0);
         drawerLayout.setDrawerListener(drawerListener);
 
@@ -66,6 +70,26 @@ public class Analysis extends ActionBarActivity implements AdapterView.OnItemCli
 
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
         switch (parent.getId()) {
+            case R.id.menuList:
+                menuList.setItemChecked(position, true);
+                getSupportActionBar().setTitle(menus[position]);
+
+                switch (position) {
+                    case 2:
+                        Intent logoutPage = new Intent(Analysis.this, UserProfile.class);
+                        startActivity(logoutPage);
+                        break;
+                    case 3:
+                        Intent analysis = new Intent(Analysis.this, Analysis.class);
+                        startActivity(analysis);
+                        break;
+                }
+
+                drawerLayout.closeDrawers();
+                break;
+            default:
+                Toast.makeText(this, "Error", Toast.LENGTH_LONG).show();
+                break;
         }
     }
     // -------------------------------------------------------------------------------------------------------

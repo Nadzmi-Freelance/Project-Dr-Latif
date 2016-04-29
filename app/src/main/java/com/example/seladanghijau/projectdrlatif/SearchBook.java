@@ -104,6 +104,10 @@ public class SearchBook extends ActionBarActivity implements View.OnClickListene
                         Intent logoutPage = new Intent(SearchBook.this, UserProfile.class);
                         startActivity(logoutPage);
                         break;
+                    case 3:
+                        Intent analysis = new Intent(SearchBook.this, Analysis.class);
+                        startActivity(analysis);
+                        break;
                 }
 
                 drawerLayout.closeDrawers(); // close the drawer when an item has been clicked

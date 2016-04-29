@@ -194,6 +194,17 @@ public class BookDetail extends ActionBarActivity implements AdapterView.OnItemC
                 menuList.setItemChecked(position, true);
                 getSupportActionBar().setTitle(menus[position]);
 
+                switch (position) {
+                    case 2:
+                        Intent logoutPage = new Intent(BookDetail.this, UserProfile.class);
+                        startActivity(logoutPage);
+                        break;
+                    case 3:
+                        Intent analysis = new Intent(BookDetail.this, Analysis.class);
+                        startActivity(analysis);
+                        break;
+                }
+
                 drawerLayout.closeDrawers();
                 break;
             default:
