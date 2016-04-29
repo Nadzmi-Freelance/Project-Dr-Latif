@@ -1,10 +1,11 @@
 package com.example.seladanghijau.projectdrlatif;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.res.Configuration;
+import android.os.Bundle;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarActivity;
-import android.os.Bundle;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.view.KeyEvent;
 import android.view.Menu;
@@ -26,6 +27,10 @@ public class SearchBook extends ActionBarActivity implements View.OnClickListene
     // other variables
     String[] menus;
 
+    // sharedpref
+    SharedPreferences userData;
+    SharedPreferences.Editor userDataEditor;
+
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_search_book);
@@ -44,8 +49,18 @@ public class SearchBook extends ActionBarActivity implements View.OnClickListene
         btnSearchAll.setOnClickListener(this);
         // ------------------------------------------------------------------------------------
 
+        // -------------------------------------- initialize varibales ----------------------------------------------
+        userData = getSharedPreferences(LoginPage.USER_PREFERENCES, MODE_PRIVATE);
+        userDataEditor = userData.edit();
+        userDataEditor.apply();
+        // ----------------------------------------------------------------------------------------------------------
+
         // -------------------------------------- menu dalam drawer ---------------------------------------------
-        menus = getResources().getStringArray(R.array.menuMain); // get list of menus from xml file
+        if (userData.getString("USERTYPE", "student").equalsIgnoreCase("stafflibrary"))
+            menus = getResources().getStringArray(R.array.menuAdmin); // get list of menus from xml file
+        else
+            menus = getResources().getStringArray(R.array.menuMain); // get list of menus from xml file
+
         drawerListener = new ActionBarDrawerToggle(this, drawerLayout, 0, 0); // declare listener for drawer menu
         drawerLayout.setDrawerListener(drawerListener); // register listener for drawer menu
 

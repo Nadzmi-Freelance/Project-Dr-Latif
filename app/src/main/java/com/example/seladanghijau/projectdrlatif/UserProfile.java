@@ -65,7 +65,7 @@ public class UserProfile extends ActionBarActivity implements AdapterView.OnItem
         drawerLayout = (DrawerLayout) findViewById(R.id.drawerLayout);
         menuList = (ListView) findViewById(R.id.menuList);
 
-        menus = getResources().getStringArray(R.array.menuLogin); // get list of menus from xml file
+        menus = getResources().getStringArray(R.array.menuMain); // get list of menus from xml file
 
         getSupportActionBar().setDisplayHomeAsUpEnabled(true); // set back arrow icon on left, up most of the screen
 

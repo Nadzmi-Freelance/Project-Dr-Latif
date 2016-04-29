@@ -36,7 +36,7 @@ import java.util.List;
 
 public class BookDetail extends ActionBarActivity implements AdapterView.OnItemClickListener, View.OnClickListener {
     // elements in activity
-    static ProgressDialog pDialog;
+    ProgressDialog pDialog;
     ActionBarDrawerToggle drawerListener;
     DrawerLayout drawerLayout;
     ListView menuList;
