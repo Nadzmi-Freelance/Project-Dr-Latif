@@ -1,8 +1,4 @@
 # Project-Dr-Latif
 A business project for Dr. Latif
 
-<<<<<<< HEAD
-A test ground for the project. Almost all minor update will be uploaded here.
-=======
-Update for this project. All major updates will be uploaded here.
->>>>>>> refs/remotes/origin/Update
+This project is still under construction, to view the files, please go to the "Test" branch.
